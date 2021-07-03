@@ -1,10 +1,10 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:vetpet/screen/dashboard.dart';
+
 import 'package:vetpet/screen/home.dart';
 
 void main() {
+
   runApp(MyApp());
 }
 

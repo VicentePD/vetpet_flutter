@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:vetpet/database/database.dart';
 import 'package:vetpet/model/Pet.dart';
@@ -12,6 +14,7 @@ class PetDao {
   static const String _sexo = 'sexo';
   static const String _tipo = 'tipo';
   static const String _raca = 'raca';
+  static const String _foto = 'foto';
   static final String tableSql = 'CREATE TABLE IF NOT EXISTS pets('
       '$_id INTEGER PRIMARY KEY, '
       '$_nome TEXT, '
@@ -19,9 +22,10 @@ class PetDao {
       '$_pelagem TEXT,'
       '$_sexo TEXT, '
       '$_tipo TEXT, '
-      '$_raca TEXT)';
+      '$_raca TEXT,'
+      '$_foto TEXT)';
   static final String alttableSql =
-      'ALTER TABLE pets ADD IF NOT EXISTS  $_raca TEXT';
+      'ALTER TABLE pets ADD IF NOT EXISTS  $_foto TEXT';
   static final String tablename = "pets";
 
   Future<List<Pet>> findAllPets() async {
@@ -33,7 +37,7 @@ class PetDao {
 
   Future<int> save(Pet pet) async {
     final Database db = await getDatabase();
-
+    developer.log("teteeee ");
     Map<String, dynamic> petMap = _toMap(pet);
     developer.log("teteeee $petMap");
     return db.insert(tablename, petMap);
@@ -43,7 +47,7 @@ class PetDao {
     final List<Pet> pets = [];
     for (Map<String, dynamic> row in result) {
       final Pet pet = Pet(row[_id], row[_nome], row[_datanascimento],
-          row[_raca], row[_pelagem], row[_sexo], row[_tipo]);
+          row[_raca], row[_pelagem], row[_sexo], row[_tipo], row[_foto]);
       pets.add(pet);
     }
 
@@ -60,7 +64,7 @@ class PetDao {
     pettMap[_pelagem]= pet.pelagem;
     pettMap[_sexo]= pet.sexo;
     pettMap[_tipo]= pet.tipo;
-
+    pettMap[_foto]= pet.foto;
     return pettMap;
   }
 }

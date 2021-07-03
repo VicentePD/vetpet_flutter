@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:vetpet/dao/pet_dao.dart';
+import 'package:vetpet/database/dao/pet_dao.dart';
+import 'package:vetpet/helpers/imagemutil.dart';
 import 'package:vetpet/model/Pet.dart';
 import 'dart:developer' as developer;
 import 'cadastropet.dart';
@@ -80,7 +81,7 @@ class PetScreenState extends State<PetScreen> {
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return CadastroPet();
+            return CadastroPet(0);
           })).then(
             (value) => _atualiza(),
           );
@@ -104,10 +105,26 @@ class ItemPet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        child: ListTile(
-      leading: Icon(Icons.monetization_on),
-      title: Text(_pet.nome.toString()),
-      subtitle: Text(_pet.nome.toString()),
-    ));
+        child: Column(children: <Widget>[ ListTile(
+          leading: CircleAvatar(
+            radius: 25,
+            backgroundColor: Color(0xffFDCF09),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child:ImageUtility.imageFromBase64String(_pet.foto)
+            ),
+          ),
+          title: Text(_pet.nome.toString()),
+          subtitle: Text(_pet.nome.toString()),
+        ),Row(mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[TextButton(
+              child: const Text('BUY TICKETS'),
+              onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) {
+    return CadastroPet(_pet.id);
+    }));
+    },
+            )])]),
+
+     );
   }
 }
