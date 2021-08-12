@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:vetpet/components/editordate.dart';
 import 'package:vetpet/components/editortexto.dart';
+import 'package:vetpet/components/msgalerta.dart';
 import 'dart:io';
 import 'package:vetpet/database/dao/pet_dao.dart';
 
@@ -14,7 +16,7 @@ import 'dart:developer' as developer;
 
 
 
-const _textoBotaoConfirmar = 'Confirmar';
+const _textoBotaoConfirmar = 'Salvar';
 enum TipoSexoSel { M, F }
 
 class CadastroPet extends StatefulWidget {
@@ -37,12 +39,22 @@ class CadastroPetState extends State<CadastroPet> {
   final _formKey = GlobalKey<FormState>();
   TipoSexoSel? _sexoSel = TipoSexoSel.M;
   late  String imgString = "";
-  final pet = Pet(0, "", "", "", "", "", "", "");
+  final PetDao _daopet = PetDao();
+  late Pet  pet = Pet(0, "", "", "", "", "", "", "");
+  late bool buscapet = true;
+
+
   @override
   Widget build(BuildContext context) {
+   // pet = _daopet.findPet(widget.idpet);
+    developer.log("logggg");
+    developer.log(widget.idpet.toString());
+    if(widget.idpet >0 && buscapet )
+      {_selectpet(widget.idpet);
+      buscapet = false;}
     return Scaffold(
         appBar: AppBar(
-          title: Text("Cadastrar Pet"),
+          title: widget.idpet ==0 ?Text("Cadastrar Pet"):Text("Editar Pet"),
         ),
         body: Form(
           key: _formKey,
@@ -126,11 +138,16 @@ class CadastroPetState extends State<CadastroPet> {
                         style: new TextStyle(fontSize: 16.0),
                       ),
                     ]),
-
-                ElevatedButton(
+                Row(mainAxisAlignment: MainAxisAlignment.center,
+                  children: [ElevatedButton(
                   child: Text(_textoBotaoConfirmar),
                   onPressed: () => _cadastrarPet(context),
-                ),
+                ),Text(widget.idpet > 0?"    ":""),widget.idpet > 0? ElevatedButton(
+          child: Text("Excluir"),
+          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red))  ,
+          onPressed: () => _deletePet(context),
+        ): Text(""),
+                    ],),
 
               ],
             ),
@@ -148,10 +165,48 @@ class CadastroPetState extends State<CadastroPet> {
     final String foto =  imgString;
 
     if ( _formKey.currentState!.validate()) {
-      final pet = Pet(0, nome, datanascimento, pelagem, raca, sexo, tipo, foto);
-      final PetDao _daopet = PetDao();
-      _daopet.save(pet);
+
+      if(widget.idpet >0  )
+        {
+          final pet = Pet(widget.idpet, nome, datanascimento, pelagem, raca, sexo, tipo, foto);
+
+          _daopet.updatePet(pet,widget.idpet) ;
+          //Provider.of<PetDao>(context, listen: true).updatePet(pet,widget.idpet);
+          _daopet.notificarDadosAlterador();
+        }
+      else
+        {
+          final pet = Pet(0, nome, datanascimento, pelagem, raca, sexo, tipo, foto);
+          _daopet.save(pet) ;
+          _daopet.notificarDadosAlterador();
+        }
+
+
       Navigator.pop(context, pet);
+    }
+  }
+  _deletePet(BuildContext context){
+    if(widget.idpet >0  ){
+      Widget cancelaButton = ElevatedButton(
+        child: Text("Cancelar"),
+        onPressed:  () {Navigator.of(context).pop(); },
+      );
+      Widget continuaButton = ElevatedButton(
+        child: Text("Continar"),
+        onPressed:  () {
+          _daopet.deletePet(widget.idpet);
+          Navigator.of(context).pop();
+          Navigator.pop(context, pet);},
+      );
+
+
+      //exibe o diálogo
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MsgAlerta(cancelaButton,continuaButton,"Confirma a Operação","Deseja Apagar o Pet Selecionado ?");
+        },
+      );
     }
   }
   _selectimg(String source) async {
@@ -162,6 +217,24 @@ class CadastroPetState extends State<CadastroPet> {
         final PickedFile? pickedImage = value;
         final File pickedImageFile = File(pickedImage!.path);
         imgString=  ImageUtility.base64String(pickedImageFile.readAsBytesSync());
+      })
+    });
+  }
+  _selectpet(int id) async {
+
+    _daopet.findPet(id).then((value) =>
+    {
+      setState(() {
+        pet = value;
+        developer.log(pet.datanascimento);
+        _controladorNome.text = pet.nome ;
+        _controladordatanascimento.text = pet.datanascimento ;
+        _controladorpelagem.text = pet.pelagem ;
+        //_sexoSel!.index = 1;
+        _controladortipo.text = pet.tipo ;
+        _controladorRaca.text = pet.raca ;
+
+        imgString=  pet.foto;
       })
     });
   }

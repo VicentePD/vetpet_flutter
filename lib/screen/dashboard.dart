@@ -26,7 +26,7 @@ class Dashboard extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => PetScreen("Teste"),
+                      builder: (context) => PetScreen(),
                     ),
                   );
                 },

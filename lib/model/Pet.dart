@@ -1,4 +1,6 @@
-class Pet {
+import 'package:flutter/cupertino.dart';
+
+class Pet  {
   final int id;
   final String nome;
   final String datanascimento;

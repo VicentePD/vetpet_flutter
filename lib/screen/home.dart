@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vetpet/screen/petscreen.dart';
 import 'package:vetpet/screen/teste.dart';
+import 'package:vetpet/screen/vacinascreen.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -16,8 +17,9 @@ class _HomePage extends State<HomePage> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final   List<Widget> _widgetOptions = [
-    PetScreen("Pets"),
-    PetScreen("Pet2"),
+    PetScreen(),
+    VacinaScreen("Vacinas"),
+    PetScreen(),
     NewPageScreen("Favoritos")
       ];
 

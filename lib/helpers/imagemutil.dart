@@ -8,10 +8,10 @@ import 'package:image_picker/image_picker.dart';
 class ImageUtility {
 
   static Image imageFromBase64String(String base64String) {
-    return Image.memory(
+    return base64String.isNotEmpty ? Image.memory(
       base64Decode(base64String),
       fit: BoxFit.fill,
-    );
+    ): Image.asset("asset/images/_MG_9521.jpg");
   }
 
   static Uint8List dataFromBase64String(String base64String) {

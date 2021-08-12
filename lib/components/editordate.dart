@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:intl/intl.dart';
+
 import 'dart:developer' as developer;
 class EditorDate extends StatelessWidget {
   final TextEditingController controlador;
@@ -23,7 +25,9 @@ class EditorDate extends StatelessWidget {
         controller: controlador,
           validator: (value) =>_validarCampo(value,obrigatorio) ,
         inputFormatters: [MaskTextInputFormatter(mask: "##/##/####")],
+        onTap:() {_selectDate(context);},
         style: TextStyle(fontSize: 16.0),
+
         decoration: InputDecoration(
           icon: icone != null ? Icon(icone) : null,
           labelText: rotulo,
@@ -34,7 +38,20 @@ class EditorDate extends StatelessWidget {
       ),
     );
   }
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2101));
+    if (picked != null)
+      controlador.text = DateFormat.yMd().format(picked);
+  }
 }
+
+
+
  dynamic _validarCampo(value,bool obrigatorio){
   if (value!.isEmpty) {
     if(obrigatorio){

@@ -1,12 +1,26 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:vetpet/screen/home.dart';
 
+import 'database/dao/pet_dao.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 void main() {
 
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (_) => PetDao(),
+      ),
+
+    ],
+
+    child: MyApp(),
+  )/*MyApp()*/);
 }
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -25,6 +39,11 @@ class MyApp extends StatelessWidget {
 
 
       ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('pt', 'BR')],
       home: HomePage(),
     );
   }
