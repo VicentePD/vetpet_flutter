@@ -2,9 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:vetpet/database/database.dart';
-import 'package:vetpet/model/Pet.dart';
+import 'package:vetpet/model/pet.dart';
 import 'dart:developer' as developer;
+
+import 'aviso_dao.dart';
+import 'notificacao_dao.dart';
 
 class PetDao extends ChangeNotifier{
   //Campos da tabela
@@ -61,10 +65,17 @@ class PetDao extends ChangeNotifier{
   }
   Future<int> deletePet( int idpet) async {
     final Database db = await getDatabase();
-    return db.delete(
+    int qtddel = await db.delete(
         tablename,
         where: '$_id = ?',
         whereArgs: [idpet]);
+    final Vacina_Dao vacinaDao = new Vacina_Dao();
+    int qtdvacinadel = await vacinaDao.deleteVacinaPet(idpet);
+    final AvisoDao avisoDao = new AvisoDao();
+    int qtdavisodel = await avisoDao.deleteAvisoPet(idpet);
+    final NotificacaoDao notificacaoDao = new NotificacaoDao();
+    int qtdnotdel = await notificacaoDao.deletenotificacaoPet(idpet);
+    return qtddel + qtdvacinadel+qtdavisodel+qtdnotdel;
   }
 
   List<Pet> _toList(List<Map<String, dynamic>> result) {
@@ -79,7 +90,7 @@ class PetDao extends ChangeNotifier{
   Pet _toPet(List<Map<String, dynamic>> result) {
     final List<Pet> pets = [];
     for (Map<String, dynamic> row in result) {
-      developer.log("teteeee $row[_id]");
+
       final Pet pet = Pet(row[_id], row[_nome], row[_datanascimento],
           row[_pelagem], row[_raca], row[_sexo], row[_tipo], row[_foto]);
       pets.add(pet);
@@ -102,5 +113,12 @@ class PetDao extends ChangeNotifier{
   }
   notificarDadosAlterador(){
     notifyListeners();
+  }
+
+   Future<String> getNome(int id_pet) async {
+    final Database db = await getDatabase();
+    final List<Map<String, dynamic>> result = await db.query(tablename, where: " $_id = $id_pet");
+    Pet pet = _toPet(result);
+    return pet.nome;
   }
 }

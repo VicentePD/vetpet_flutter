@@ -4,8 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:vetpet/database/dao/vacina_dao.dart';
-import 'package:vetpet/model/Pet.dart';
+import 'package:vetpet/model/pet.dart';
 
+import 'dao/aviso_dao.dart';
+import 'dao/notificacao_dao.dart';
 import 'dao/pet_dao.dart';
 
 //import 'dart:developer' as developer;
@@ -16,11 +18,14 @@ Future<Database> getDatabase() async {
     path,
     onCreate: (db, version) {
       db.execute(PetDao.tableSql);
+      db.execute(Vacina_Dao.tableSql);
+      db.execute(AvisoDao.tableSql);
+      db.execute(NotificacaoDao.tableSql);
     },
       onUpgrade: (db, oldVersion,newVersion) async {
-        db.execute(PetDao.alttableSql);
-        db.execute(Vacina_Dao.tableSql);
-  },version: 3,
+        db.execute(NotificacaoDao.tableSql);
+
+  },version: 5,
   );
 }
 

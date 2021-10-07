@@ -2,10 +2,15 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:vetpet/helpers/NotificacaoPlugin.dart';
+import 'package:vetpet/model/notificacao.dart';
 import 'package:vetpet/model/vacina.dart';
 
 import '../database.dart';
-
+import 'notificacao_dao.dart';
+import 'dart:developer' as developer;
+import 'dart:developer' as developer;
+import 'package:intl/intl.dart';
 class Vacina_Dao extends ChangeNotifier{
 
   static const String _id = 'id';
@@ -24,18 +29,27 @@ class Vacina_Dao extends ChangeNotifier{
       '$_veterinario TEXT)';
 
   static final String tablename = "vacinas";
-
+  static final String tablenamePet = "pets";
   Future<List<Vacina>> findAllVacinas(int idpetsel ) async {
     final Database db = await getDatabase();
     if(idpetsel > 0){
       return findAllVacinasPet(idpetsel);
     }
     else{
-      final List<Map<String, dynamic>> result = await db.query(tablename);
+      //final List<Map<String, dynamic>> result = await db.query(tablename,orderBy: "$_dataretorno DESC");
+      final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome from $tablename,$tablenamePet where $tablename.id_pet = $tablenamePet.id  ORDER BY $_dataretorno DESC");
       List<Vacina> vacinas = _toList(result);
       notifyListeners();
       return vacinas;
     }
+  }
+  Future<List<Vacina>> findAllVacinasPet(int idpetsel) async {
+
+    final Database db = await getDatabase();
+    final List<Map<String, dynamic>> result = await db.query(tablename,where: " $_id_pet = $idpetsel",orderBy: "$_dataretorno DESC");
+    List<Vacina> vacinas = _toList(result);
+    notifyListeners();
+    return vacinas;
   }
   Future<Vacina> findVacina(int id) async {
     final Database db = await getDatabase();
@@ -47,32 +61,56 @@ class Vacina_Dao extends ChangeNotifier{
   Future<int> save(Vacina vacina) async {
     final Database db = await getDatabase();
     Map<String, dynamic> petMap = _toMap(vacina);
-    return db.insert(tablename, petMap);
+    int idvacina = await db.insert(tablename, petMap);
+    final Notificacao notificacao = new Notificacao(0,idvacina,0,vacina.id_pet,vacina.dataaplicacao,"",vacina.dataretorno,'A');
+    notificacao.calculaInicio();
+    NotificacaoDao().save(notificacao);
+    return idvacina;
   }
-  Future<int> updatePet(Vacina vacina, int idvacina) async {
+  Future<int> updateVacina(Vacina vacina, int idvacina) async {
     final Database db = await getDatabase();
     Map<String, dynamic> petMap = _toMap(vacina);
-    notifyListeners();
+    final Notificacao notificacao = new Notificacao(0,idvacina,0,vacina.id_pet,vacina.dataaplicacao,"",vacina.dataretorno,'A');
+    notificacao.calculaInicio();
+    NotificacaoDao().updateNotificacaoAviso(notificacao,idvacina);
     return db.update(
         tablename,
         petMap,
         where: '$_id = ?',
         whereArgs: [idvacina]);
   }
-  Future<int> deletePet( int idpet) async {
+  Future<int> deleteVacina( int id) async {
     final Database db = await getDatabase();
     return db.delete(
         tablename,
         where: '$_id = ?',
+        whereArgs: [id]).whenComplete(() => (){
+      final NotificacaoDao notificacaoDao = new NotificacaoDao();
+      return notificacaoDao.deletenotificacaoVacina(id);
+    });
+  }
+  Future<int> deleteVacinaPet( int idpet) async {
+    final Database db = await getDatabase();
+    return db.delete(
+        tablename,
+        where: '$_id_pet = ?',
         whereArgs: [idpet]);
   }
-
   List<Vacina> _toList(List<Map<String, dynamic>> result) {
     final List<Vacina> vacinas = [];
     for (Map<String, dynamic> row in result) {
-      final Vacina vacina = Vacina(row[_id], row[_id_pet], row[_nome_vacina],
-          row[_dataaplicacao], row[_dataretorno], row[_veterinario]);
-      vacinas.add(vacina);
+      developer.log("_toList $row");
+      if(row.length == 7)
+      {
+        final Vacina vacina = Vacina(row[_id], row[_id_pet], row[_nome_vacina],
+            row[_dataaplicacao], row[_dataretorno], row[_veterinario],row['nome']);
+        vacinas.add(vacina);
+      }
+      else{
+        final Vacina vacina = Vacina(row[_id], row[_id_pet], row[_nome_vacina],
+            row[_dataaplicacao], row[_dataretorno], row[_veterinario]);
+        vacinas.add(vacina);
+      }
     }
     return vacinas;
   }
@@ -100,12 +138,23 @@ class Vacina_Dao extends ChangeNotifier{
     return vacinaMap;
   }
 
-  Future<List<Vacina>> findAllVacinasPet(int idpetsel) async {
 
+
+  static verificaVacinaVencendo( int id , int idnotivicacao) async {
     final Database db = await getDatabase();
-    final List<Map<String, dynamic>> result = await db.query(tablename,where: " $_id_pet = $idpetsel");
-    List<Vacina> vacinas = _toList(result);
-    notifyListeners();
-    return vacinas;
+  /*  final List<Map<String, dynamic>> result = await db.query(
+        tablename, where: " $_id = $id");*/
+    final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome "
+        "from $tablename,$tablenamePet where $tablename.id = $id and $tablename.id_pet = $tablenamePet.id  "
+        "ORDER BY $_dataretorno DESC");
+    for (Map<String, dynamic> row in result) {
+      DateTime dt = new DateFormat('dd/MM/yyyy HH:mm:ss').parse(
+          row[_dataretorno].toString() + ' ' + DateTime.now().hour
+              .toString() + ':' + DateTime.now().minute.toString() + ':22');
+      await notificationPlugin.scheduleNotification(
+          idnotivicacao, datanotificacao: dt,
+          titulo: "Vacina " + row[_nome_vacina].toString(),
+          msg: 'Verifique a Vacina do seu Pet '+ row['nome'].toString() + '. \n Ela expira dia ' + row[_dataretorno].toString());
+    }
   }
 }

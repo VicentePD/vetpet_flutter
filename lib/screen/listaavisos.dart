@@ -1,49 +1,47 @@
 
 import 'package:flutter/material.dart';
 import 'package:vetpet/components/petselecionado.dart';
+import 'package:vetpet/database/dao/aviso_dao.dart';
 
-import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:vetpet/helpers/imagemutil.dart';
-import 'package:vetpet/model/vacina.dart';
-import 'dart:developer' as developer;
-import 'cadastros/cadastropet.dart';
+import 'package:vetpet/model/aviso.dart';
+
+import 'cadastros/cadastroaviso.dart';
 import 'cadastros/cadastrovacina.dart';
 import '../helpers/globals.dart' as globals;
-
-
-class VacinaScreen extends StatefulWidget {
-  final List<Vacina> _vacinas = [];
+class AvisoScreen extends StatefulWidget {
+ // final List<Vacina> _vacinas = [];
   final String texto;
-  VacinaScreen(this.texto);
+  AvisoScreen(this.texto);
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return VacinaScreenState();
+    return AvisoScreenState();
   }
 }
 
-class VacinaScreenState extends State<VacinaScreen> {
+class AvisoScreenState extends State<AvisoScreen> {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Vacinas"),
+        title: Text("Alertas"),
       ),
-      body:globals.idpetsel == 0? _vacinaList(_atualiza) :Column(
+      body:globals.idpetsel == 0? _avisoList(_atualiza) :Column(
           children: <Widget>[Expanded(
             child: PetSelecionado(),
             flex: 0,
           ),Expanded(
-        child: _vacinaList(_atualiza  ),
-      )] ),
+            child: _avisoList(_atualiza  ),
+          )] ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return CadastroVacina(0);
+            return CadastroAviso(0);
           })).then(
-            (value) => _atualiza(),
+                (value) => _atualiza(),
           );
         },
       ),
@@ -54,13 +52,13 @@ class VacinaScreenState extends State<VacinaScreen> {
     setState(() {});
   }
 
-  FutureBuilder<List<Vacina>> _vacinaList(void Function() atualiza){
+  FutureBuilder<List<Aviso>> _avisoList(void Function() atualiza){
 
-    return FutureBuilder<List<Vacina>>(
+    return FutureBuilder<List<Aviso>>(
         initialData: [],
-        future: Vacina_Dao().findAllVacinas(globals.idpetsel),
+        future: AvisoDao().findAllAvisos(globals.idpetsel),
         builder: (context, snapshot) {
-          Widget corp = Row(children:<Widget>[Text("Nenhuma Vacina Cadastrada")]);
+          Widget corp = Row(children:<Widget>[Text("Nenhum Aviso Cadastrado!")]);
           switch (snapshot.connectionState) {
             case ConnectionState.none:
               break;
@@ -79,12 +77,12 @@ class VacinaScreenState extends State<VacinaScreen> {
             case ConnectionState.active:
               break;
             case ConnectionState.done:
-              if (snapshot.data != null) {
-                final List<Vacina>? vacinas = snapshot.data;
+              if (snapshot.data != null && snapshot.data!.isNotEmpty  ) {
+                final List<Aviso>? avisos = snapshot.data;
                 corp = ListView.builder(
                   itemBuilder: (context, index) {
-                    final Vacina vacina = vacinas![index];
-                    final String NomePet = globals.idpetsel == 0? "Nome:"+ vacina.nomepet +"\n":"";
+                    final Aviso aviso = avisos![index];
+                    final String NomePet = globals.idpetsel == 0? "Nome:"+ aviso.nomepet +"\n":"";
                     return  SizedBox (
                       // height: height,
                         child:Card(
@@ -92,14 +90,14 @@ class VacinaScreenState extends State<VacinaScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 ListTile(
-                                  leading: Icon(Icons.medical_services),
-                                  title: Text("Vacina:" + vacina.nome_vacina.toString()),
-                                  subtitle: Text( NomePet+"Data Aplicação:" +vacina.dataaplicacao.toString()+"\nData de Retorno: "
-                                      + vacina.dataretorno.toString()),
+                                  leading: Icon(Icons.timer),
+                                  title: Text("Aviso:" + aviso.nomeaviso.toString()),
+                                  subtitle: Text(NomePet + "Data Do Cadastro:" +aviso.datacadastro.toString()+"\nData de Expiração: "
+                                      + aviso.datavencimento.toString()),
                                   isThreeLine:true,
                                   onLongPress: () {Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                        return CadastroVacina(vacina.id);
+                                        return CadastroAviso(aviso.id);
                                       })).then(
                                         (value) => { atualiza()},
                                   );} ,
@@ -108,7 +106,7 @@ class VacinaScreenState extends State<VacinaScreen> {
                               ],
                             ))); //ItemPet(pet);
                   },
-                  itemCount: vacinas?.length,
+                  itemCount: avisos?.length,
                 );
               } else {
                 corp = Center(
@@ -116,7 +114,7 @@ class VacinaScreenState extends State<VacinaScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text('Nenhuma Vacina Cadastrada.'),
+                      Text('Nenhum Aviso Cadastrado.'),
                     ],
                   ),
                 );

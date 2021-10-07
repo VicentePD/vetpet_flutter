@@ -4,15 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vetpet/database/dao/pet_dao.dart';
 import 'package:vetpet/helpers/imagemutil.dart';
-import 'package:vetpet/model/Pet.dart';
+import 'package:vetpet/model/pet.dart';
 import 'dart:developer' as developer;
-import 'cadastropet.dart';
+import 'cadastros/cadastropet.dart';
 import '../helpers/globals.dart' as globals;
 
 class PetScreen extends StatefulWidget {
   final List<Pet> _pets = [];
-
-
   PetScreen();
   @override
   State<StatefulWidget> createState() {
@@ -31,6 +29,7 @@ class PetScreenState extends State<PetScreen> {
         title: Text("Pets"),
       ),
       body: FutureBuilder<List<Pet>>(
+
           initialData: [],
           future: _daopet.findAllPets(),
           builder: (context, snapshot) {
@@ -38,6 +37,7 @@ class PetScreenState extends State<PetScreen> {
               case ConnectionState.none:
                 break;
               case ConnectionState.waiting:
+                developer.log("Pet waiting");
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +52,9 @@ class PetScreenState extends State<PetScreen> {
               case ConnectionState.active:
                 break;
               case ConnectionState.done:
-                if (snapshot.data != null) {
+                developer.log("Pet done");
+                if (snapshot.data != null &&  snapshot.data!.length >0 ) {
+                  developer.log("Pet data != null");
                   final List<Pet>? pets = snapshot.data;
                   return ListView.builder(
                     itemBuilder: (context, index) {
@@ -103,12 +105,14 @@ class PetScreenState extends State<PetScreen> {
                     itemCount: pets?.length,
                   );
                 } else {
+                  developer.log("Nenummmmmmm");
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text('Nenum Pet Cadastrado.'),
+
                       ],
                     ),
                   );

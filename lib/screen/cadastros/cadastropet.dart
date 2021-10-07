@@ -8,10 +8,11 @@ import 'package:vetpet/components/editortexto.dart';
 import 'package:vetpet/components/msgalerta.dart';
 import 'dart:io';
 import 'package:vetpet/database/dao/pet_dao.dart';
-
-
+import 'package:intl/intl.dart';
+import 'package:dart_date/dart_date.dart';
+import 'package:vetpet/helpers/globals.dart';
 import 'package:vetpet/helpers/imagemutil.dart';
-import 'package:vetpet/model/Pet.dart';
+import 'package:vetpet/model/pet.dart';
 import 'dart:developer' as developer;
 
 
@@ -33,7 +34,7 @@ final int idpet;
 class CadastroPetState extends State<CadastroPet> {
   final TextEditingController _controladorNome = TextEditingController();
   final TextEditingController _controladorRaca = TextEditingController();
-  final TextEditingController _controladordatanascimento =  TextEditingController();
+  late TextEditingController _controladordatanascimento =  TextEditingController();
   final TextEditingController _controladorpelagem = TextEditingController();
   final TextEditingController _controladortipo = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -43,7 +44,15 @@ class CadastroPetState extends State<CadastroPet> {
   late Pet  pet = Pet(0, "", "", "", "", "", "", "");
   late bool buscapet = true;
 
+  @override
+  void initState() {
+    super.initState();
+    Intl.defaultLocale = 'pt_BR';
+    //_initialValue = DateTime.now().toString();
+    _controladordatanascimento =
+        TextEditingController(text: DateTime.now().format(pattern, 'pt_BR'));
 
+  }
   @override
   Widget build(BuildContext context) {
    // pet = _daopet.findPet(widget.idpet);
@@ -192,7 +201,9 @@ class CadastroPetState extends State<CadastroPet> {
         onPressed:  () {Navigator.of(context).pop(); },
       );
       Widget continuaButton = ElevatedButton(
+
         child: Text("Continar"),
+        style:ButtonStyle( backgroundColor:  MaterialStateProperty.all<Color>(Colors.red) ),
         onPressed:  () {
           _daopet.deletePet(widget.idpet);
           Navigator.of(context).pop();
@@ -214,7 +225,7 @@ class CadastroPetState extends State<CadastroPet> {
     ImageUtility.recuperaIMG(source).then((value) =>
     {
       setState(() {
-        final PickedFile? pickedImage = value;
+        final XFile? pickedImage = value ;
         final File pickedImageFile = File(pickedImage!.path);
         imgString=  ImageUtility.base64String(pickedImageFile.readAsBytesSync());
       })
@@ -230,7 +241,10 @@ class CadastroPetState extends State<CadastroPet> {
         _controladorNome.text = pet.nome ;
         _controladordatanascimento.text = pet.datanascimento ;
         _controladorpelagem.text = pet.pelagem ;
-        //_sexoSel!.index = 1;
+        if(pet.sexo == "M")
+           _sexoSel = TipoSexoSel.M;
+        else
+          _sexoSel = TipoSexoSel.F;
         _controladortipo.text = pet.tipo ;
         _controladorRaca.text = pet.raca ;
 

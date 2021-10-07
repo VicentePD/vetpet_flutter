@@ -6,12 +6,13 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUtility {
-
   static Image imageFromBase64String(String base64String) {
-    return base64String.isNotEmpty ? Image.memory(
-      base64Decode(base64String),
-      fit: BoxFit.fill,
-    ): Image.asset("asset/images/_MG_9521.jpg");
+    return base64String.isNotEmpty
+        ? Image.memory(
+            base64Decode(base64String),
+            fit: BoxFit.fill,
+          )
+        : Image.asset("asset/images/_MG_9521.jpg");
   }
 
   static Uint8List dataFromBase64String(String base64String) {
@@ -21,13 +22,12 @@ class ImageUtility {
   static String base64String(Uint8List data) {
     return base64Encode(data);
   }
-  static Future<PickedFile?> recuperaIMG(String source) async {
-    return await ImagePicker().getImage(
-      source: source == "Camera" ? ImageSource.camera: ImageSource.gallery,
+
+  static Future<XFile?> recuperaIMG(String source) async {
+    return  ImagePicker().pickImage(
+      source: source == "Camera" ? ImageSource.camera : ImageSource.gallery,
       imageQuality: 50,
       maxWidth: 120,
     );
-
   }
-
 }
