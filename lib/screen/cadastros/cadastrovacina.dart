@@ -7,20 +7,21 @@ import 'package:vetpet/components/editordate.dart';
 import 'package:vetpet/components/editortexto.dart';
 import 'package:vetpet/components/msgalerta.dart';
 import 'package:vetpet/components/petselecionado.dart';
+import 'package:vetpet/database/dao/notificacao_dao.dart';
 
 import 'package:vetpet/database/dao/pet_dao.dart';
 import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:intl/intl.dart';
 import 'package:vetpet/helpers/alertmsgutil.dart';
 
-//import 'dart:developer' as developer;
+import 'dart:developer' as developer;
 
 import 'package:vetpet/model/vacina.dart';
 import 'package:vetpet/screen/petscreen.dart';
 import '../../helpers/globals.dart' as globals;
 
 const _textoBotaoConfirmar = 'Salvar';
-
+enum TipoSexoSel { M, F }
 class CadastroVacina extends StatefulWidget {
   final int idvacina;
 
@@ -37,12 +38,13 @@ class CadastroVacinaState extends State<CadastroVacina> {
   late TextEditingController _controladordataaplicacao = TextEditingController();
   late TextEditingController _controladordataretorno =   TextEditingController();
   final TextEditingController _controladorveterinario =  TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final  _formKey = GlobalKey<FormState>();
   late String imgString = "";
   final Vacina_Dao _daovacina = Vacina_Dao();
   late Vacina vacina = Vacina(0, globals.idpetsel, "", "", "", "");
   late bool buscavacina = true;
   static const pattern = 'dd/MM/yyyy';
+  bool isChecked = false;
 
   @override
   void initState() {
@@ -63,6 +65,7 @@ class CadastroVacinaState extends State<CadastroVacina> {
       _selectvacina(widget.idvacina);
       buscavacina = false;
     }
+
     return Scaffold(
         appBar: AppBar(
           title: widget.idvacina == 0
@@ -109,6 +112,17 @@ class CadastroVacinaState extends State<CadastroVacina> {
                     _controladorveterinario,
                     rotulo: "Veterinário",
                   ),
+                  CheckboxListTile(title:Text("Inativar noticicações"),
+                    checkColor: Colors.white,
+                    value: isChecked,
+                      selected:false,
+                    onChanged: widget.idvacina == 0 ? null :(bool? newValue) => {
+                      setState(() {
+                        isChecked = newValue!;
+                      })
+                    },
+                  ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -146,8 +160,12 @@ class CadastroVacinaState extends State<CadastroVacina> {
       if (widget.idvacina > 0) {
         final vacina = Vacina(widget.idvacina, idpet, nomevacina, dataaplicacao,
             dataretorno, veterinario);
-
-        _daovacina.updateVacina(vacina, widget.idvacina);
+        //Inativar Notificação
+        String statusNotificacaoVacina = "A";
+        if(isChecked){
+          statusNotificacaoVacina = "S";
+        }
+        _daovacina.updateVacina(vacina, widget.idvacina,statusNotificacaoVacina);
         //Provider.of<PetDao>(context, listen: true).updatePet(pet,widget.idpet);
       } else {
         final vacina = Vacina(widget.idvacina, idpet, nomevacina, dataaplicacao,
@@ -203,6 +221,16 @@ class CadastroVacinaState extends State<CadastroVacina> {
   }
 
   _selectvacina(int id) async {
+    developer.log("Seleciona Vacina " +id.toString());
+    NotificacaoDao _daonotificacao = new NotificacaoDao();
+    _daonotificacao.findNotificacaoVacina(id).then((value) => {
+      setState(() {
+        developer.log("Seleciona Vacina  st " +value.status);
+        if(value.status != "A"){
+          isChecked = true;
+         }
+      })
+    });
     _daovacina.findVacina(id).then((value) => {
           setState(() {
             vacina = value;

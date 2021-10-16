@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,28 +14,23 @@ import 'database/dao/pet_dao.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cron/cron.dart';
 import 'dart:developer' as developer;
- main()  {
 
-   //FirebaseApp defaultApp = Firebase.app();
-   //print('Message data: ${defaultApp.options.appId.toString()}');
 
-  // needed if you intend to initialize in the `main` function
-  WidgetsFlutterBinding.ensureInitialized();
-  final cron = Cron();
-  cron.schedule(Schedule.parse('25 * * * *'), () async {
-    developer.log('TESTE Schedule');
-    NotificacaoDao.verificaNotificacao();
+main()  async {
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    final cron = Cron();
+    cron.schedule(Schedule.parse('25 * * * *'), () async {
+      NotificacaoDao.verificaNotificacao();
+    });
+
+    runApp( MyApp()  );
+
+  }, (error, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
   });
-  //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(
-        create: (_) => PetDao(),
-      ),
-    ],
-    child: MyApp(),
-  ));
 }
 
 
@@ -96,7 +96,6 @@ class Splash extends StatelessWidget {
 class Init {
   Init._();
   static final instance = Init._();
-
   Future initialize() async {
     // This is where you can initialize the resources needed by your app while
     // the splash screen is displayed.  Remove the following example because

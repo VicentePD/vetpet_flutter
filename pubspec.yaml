@@ -31,7 +31,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_animated_dialog: ^2.0.1
-  flutter_local_notifications: ^8.1.1+1
+  flutter_local_notifications: ^9.0.0
   rxdart: ^0.27.1
   device_info: ^2.0.2
   flutter_native_timezone: ^2.0.0
@@ -41,6 +41,8 @@ dependencies:
   flutter_screenutil: ^5.0.0+2
 
   flutter_native_splash: ^1.2.3
+  firebase_crashlytics: ^2.2.3
+  firebase_core: ^1.7.0
  # shared_preferences: ^0.5.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -50,9 +52,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 flutter_icons:
-  android: "app_icon"
+  image_path_android: "asset/icon/icon-710x599-android.png"
+  android: true
   ios: true
-  image_path: "asset/icon/icon.png"
+  image_path: "asset/icon/icon-710x599-android.png"
+  adaptive_icon_background: "asset/icon/background.png"
+  adaptive_icon_foreground: "asset/icon/icon-foreground.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

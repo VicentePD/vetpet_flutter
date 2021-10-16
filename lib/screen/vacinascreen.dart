@@ -5,14 +5,12 @@ import 'package:vetpet/components/petselecionado.dart';
 import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:vetpet/helpers/imagemutil.dart';
 import 'package:vetpet/model/vacina.dart';
-import 'dart:developer' as developer;
-import 'cadastros/cadastropet.dart';
+
 import 'cadastros/cadastrovacina.dart';
 import '../helpers/globals.dart' as globals;
 
 
 class VacinaScreen extends StatefulWidget {
-  final List<Vacina> _vacinas = [];
   final String texto;
   VacinaScreen(this.texto);
   @override
@@ -30,13 +28,16 @@ class VacinaScreenState extends State<VacinaScreen> {
       appBar: AppBar(
         title: Text("Vacinas"),
       ),
-      body:globals.idpetsel == 0? _vacinaList(_atualiza) :Column(
+      body: Container(
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/_MG_9521.jpg"),
+    fit: BoxFit.cover,)),
+    child: globals.idpetsel == 0? _vacinaList(_atualiza) :Column(
           children: <Widget>[Expanded(
             child: PetSelecionado(),
             flex: 0,
           ),Expanded(
         child: _vacinaList(_atualiza  ),
-      )] ),
+      )] )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
@@ -84,7 +85,7 @@ class VacinaScreenState extends State<VacinaScreen> {
                 corp = ListView.builder(
                   itemBuilder: (context, index) {
                     final Vacina vacina = vacinas![index];
-                    final String NomePet = globals.idpetsel == 0? "Nome:"+ vacina.nomepet +"\n":"";
+                    final String nomePet = globals.idpetsel == 0? "Nome:"+ vacina.nomepet +"\n":"";
                     return  SizedBox (
                       // height: height,
                         child:Card(
@@ -94,7 +95,7 @@ class VacinaScreenState extends State<VacinaScreen> {
                                 ListTile(
                                   leading: Icon(Icons.medical_services),
                                   title: Text("Vacina:" + vacina.nome_vacina.toString()),
-                                  subtitle: Text( NomePet+"Data Aplicação:" +vacina.dataaplicacao.toString()+"\nData de Retorno: "
+                                  subtitle: Text( nomePet+"Data Aplicação:" +vacina.dataaplicacao.toString()+"\nData de Retorno: "
                                       + vacina.dataretorno.toString()),
                                   isThreeLine:true,
                                   onLongPress: () {Navigator.push(context,

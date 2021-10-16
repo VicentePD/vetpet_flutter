@@ -41,6 +41,7 @@ class CadastroAvisoState extends State<CadastroAviso> {
   late Aviso aviso = Aviso(0, globals.idpetsel, "", "", "", "");
   late bool buscaaviso = true;
   static const pattern = 'dd/MM/yyyy';
+  bool isChecked = false;
 
   @override
   void initState() {
@@ -107,6 +108,16 @@ class CadastroAvisoState extends State<CadastroAviso> {
                     _controladorDescricao,
                     rotulo: "Descrição",
                   ),
+                  CheckboxListTile(title:Text("Inativar noticicações"),
+                    checkColor: Colors.white,
+                    value: isChecked,
+                    selected:false,
+                    onChanged: widget.idaviso == 0 ? null :(bool? newValue) => {
+                      setState(() {
+                        isChecked = newValue!;
+                      })
+                    },
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -158,7 +169,11 @@ class CadastroAvisoState extends State<CadastroAviso> {
       if (widget.idaviso > 0) {
         final aviso = Aviso(widget.idaviso, idpet, nomeaviso, datacadastro,
             datavencimento, descricao);
-        _daoaviso.updateAviso(aviso, widget.idaviso);
+        String statusNotificacaoVacina = "A";
+        if(isChecked){
+          statusNotificacaoVacina = "S";
+        }
+        _daoaviso.updateAviso(aviso, widget.idaviso,statusNotificacaoVacina);
       } else {
         final aviso = Aviso(widget.idaviso, idpet, nomeaviso, datacadastro,
             datavencimento, descricao);

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:vetpet/components/editordate.dart';
 import 'package:vetpet/components/editortexto.dart';
 import 'package:vetpet/components/msgalerta.dart';
+import 'package:vetpet/database/dao/notificacao_dao.dart';
 import 'dart:io';
 import 'package:vetpet/database/dao/pet_dao.dart';
 import 'package:intl/intl.dart';
@@ -56,8 +57,6 @@ class CadastroPetState extends State<CadastroPet> {
   @override
   Widget build(BuildContext context) {
    // pet = _daopet.findPet(widget.idpet);
-    developer.log("logggg");
-    developer.log(widget.idpet.toString());
     if(widget.idpet >0 && buscapet )
       {_selectpet(widget.idpet);
       buscapet = false;}
@@ -232,6 +231,7 @@ class CadastroPetState extends State<CadastroPet> {
     });
   }
   _selectpet(int id) async {
+
 
     _daopet.findPet(id).then((value) =>
     {

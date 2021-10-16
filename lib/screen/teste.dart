@@ -27,7 +27,7 @@ class _LocalNotificationScreenState extends State<LocalNotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    printScreenInformation();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Sobre'),
@@ -36,32 +36,22 @@ class _LocalNotificationScreenState extends State<LocalNotificationScreen> {
             decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/_MG_9521.jpg"),
               fit: BoxFit.cover,)),
           child: ListView( padding: const EdgeInsets.all(8),
-              children: <Widget>[Text('  Atenção',
+              children: <Widget>[Text(' Atenção',
                                         style: TextStyle(
                                                 fontSize: ScreenUtil().setSp(24),
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.orange,),
-                                      ),Text('      O aplicativo não salva as informações fora do dispositivo.',
+                                      ),Text('    O aplicativo não salva as informações fora do dispositivo. \n '
+                  '   Caso ele seja desinstalado, todas as informações serão perdidas',
                   style: TextStyle(
                     color: Colors.orange,
                   )),
                                     Column(
-        children: [Row(children:[]),Text('Device width:${ScreenUtil().screenWidth}dp',
+        children: [Text('Device width:${ScreenUtil().screenWidth}dp',
             style: TextStyle(  color: Colors.orange, )
         ),
-        Text('Device height:${ScreenUtil().screenHeight}dp',
-            style: TextStyle(  color: Colors.orange, )),
-        Text('Device pixel density:${ScreenUtil().pixelRatio}',
-            style: TextStyle(  color: Colors.orange, )),
         Text('Bottom safe zone distance:${ScreenUtil().bottomBarHeight}dp',
             style: TextStyle(  color: Colors.orange, )),
-        Text('Status bar height:${ScreenUtil().statusBarHeight}dp',
-            style: TextStyle(  color: Colors.orange, )),
-        Text(
-          'The ratio of actual width to UI design:${ScreenUtil().scaleWidth}',
-          textAlign: TextAlign.center,
-            style: TextStyle(  color: Colors.orange, )
-        ),
         Text(
           'The ratio of actual height to UI design:${ScreenUtil().scaleHeight}',
           textAlign: TextAlign.center,
@@ -131,18 +121,5 @@ class _LocalNotificationScreenState extends State<LocalNotificationScreen> {
       return PetScreen(  );
     }));
   }
-  void printScreenInformation() {
-    print('Device width dp:${1.sw}dp');
-    print('Device height dp:${1.sh}dp');
-    print('Device pixel density:${ScreenUtil().pixelRatio}');
-    print('Bottom safe zone distance dp:${ScreenUtil().bottomBarHeight}dp');
-    print('Status bar height dp:${ScreenUtil().statusBarHeight}dp');
-    print('The ratio of actual width to UI design:${ScreenUtil().scaleWidth}');
-    print(
-        'The ratio of actual height to UI design:${ScreenUtil().scaleHeight}');
-    print('System font scaling:${ScreenUtil().textScaleFactor}');
-    print('0.5 times the screen width:${0.5.sw}dp');
-    print('0.5 times the screen height:${0.5.sh}dp');
-    print('Screen orientation:${ScreenUtil().orientation}');
-  }
+
 }

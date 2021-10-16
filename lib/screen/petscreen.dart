@@ -28,7 +28,10 @@ class PetScreenState extends State<PetScreen> {
       appBar: AppBar(
         title: Text("Pets"),
       ),
-      body: FutureBuilder<List<Pet>>(
+      body:  Container(
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/_MG_9521.jpg"),
+    fit: BoxFit.cover,)),
+    child:FutureBuilder<List<Pet>>(
 
           initialData: [],
           future: _daopet.findAllPets(),
@@ -37,7 +40,6 @@ class PetScreenState extends State<PetScreen> {
               case ConnectionState.none:
                 break;
               case ConnectionState.waiting:
-                developer.log("Pet waiting");
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -52,9 +54,7 @@ class PetScreenState extends State<PetScreen> {
               case ConnectionState.active:
                 break;
               case ConnectionState.done:
-                developer.log("Pet done");
                 if (snapshot.data != null &&  snapshot.data!.length >0 ) {
-                  developer.log("Pet data != null");
                   final List<Pet>? pets = snapshot.data;
                   return ListView.builder(
                     itemBuilder: (context, index) {
@@ -105,13 +105,12 @@ class PetScreenState extends State<PetScreen> {
                     itemCount: pets?.length,
                   );
                 } else {
-                  developer.log("Nenummmmmmm");
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text('Nenum Pet Cadastrado.'),
+                        Text('Nenum Pet Cadastrado.',style:  TextStyle(  color: Colors.orange, ),),
 
                       ],
                     ),
@@ -119,8 +118,8 @@ class PetScreenState extends State<PetScreen> {
                 }
                 break;
             }
-            return Text("Nenhum Pet Cadastrado");
-          }),
+            return Text("Nenhum Pet Cadastrado", style:  TextStyle(  color: Colors.orange, ));
+          })),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {

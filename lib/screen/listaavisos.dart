@@ -28,13 +28,16 @@ class AvisoScreenState extends State<AvisoScreen> {
       appBar: AppBar(
         title: Text("Alertas"),
       ),
-      body:globals.idpetsel == 0? _avisoList(_atualiza) :Column(
+      body: Container(
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/_MG_9521.jpg"),
+    fit: BoxFit.cover,)),
+    child:globals.idpetsel == 0? _avisoList(_atualiza) :Column(
           children: <Widget>[Expanded(
             child: PetSelecionado(),
             flex: 0,
           ),Expanded(
             child: _avisoList(_atualiza  ),
-          )] ),
+          )] )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {

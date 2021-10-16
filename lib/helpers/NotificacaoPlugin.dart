@@ -76,7 +76,7 @@ class NotificationPlugin {
     var androidChannelSpecifics = AndroidNotificationDetails(
       'CHANNEL_ID 22',
       'CHANNEL_NAME 22',
-      "CHANNEL_DESCRIPTION 22",
+     // "CHANNEL_DESCRIPTION 22",
       importance: Importance.max,
       priority: Priority.high,
       playSound: true,
@@ -100,7 +100,7 @@ class NotificationPlugin {
     var androidChannelSpecifics = AndroidNotificationDetails(
       'CHANNEL_ID 4',
       'CHANNEL_NAME 4',
-      "CHANNEL_DESCRIPTION 4",
+      //"CHANNEL_DESCRIPTION 4",
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -123,7 +123,7 @@ class NotificationPlugin {
     var androidChannelSpecifics = AndroidNotificationDetails(
       'CHANNEL_ID 3',
       'CHANNEL_NAME 3',
-      "CHANNEL_DESCRIPTION 3",
+     // "CHANNEL_DESCRIPTION 3",
       importance: Importance.max,
       priority: Priority.high,
       styleInformation: DefaultStyleInformation(true, true),
@@ -147,7 +147,7 @@ class NotificationPlugin {
     var androidChannelSpecifics = AndroidNotificationDetails(
       'VETPET'  ,
       'VETPET' ,
-      "VETPET ALERTAS" ,
+      //"VETPET ALERTAS" ,
       icon: 'app_icon',
       //sound: RawResourceAndroidNotificationSound('my_sound'),
       largeIcon: DrawableResourceAndroidBitmap('app_icon'),
@@ -197,7 +197,7 @@ class NotificationPlugin {
     var androidChannelSpecifics = AndroidNotificationDetails(
       'CHANNEL ID 2',
       'CHANNEL NAME 2',
-      'CHANNEL DESCRIPTION 2',
+     // 'CHANNEL DESCRIPTION 2',
       importance: Importance.high,
       priority: Priority.high,
       styleInformation: bigPictureStyleInformation,

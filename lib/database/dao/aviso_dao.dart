@@ -1,5 +1,6 @@
 
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vetpet/helpers/NotificacaoPlugin.dart';
@@ -58,43 +59,70 @@ class AvisoDao extends ChangeNotifier{
   }
 
   Future<int> save(Aviso aviso) async {
-    final Database db = await getDatabase();
-    Map<String, dynamic> avisoMap = _toMap(aviso);
-    int idaviso = await db.insert(tablename, avisoMap);
-    final Notificacao notificacao = new Notificacao(0,0,idaviso,aviso.idpet ,aviso.datacadastro,"",aviso.datavencimento,'A');
-    notificacao.calculaInicio();
-    NotificacaoDao().save(notificacao);
-      return idaviso;
-  }
-  Future<int> updateAviso(Aviso aviso, int idaviso) async {
-    final Database db = await getDatabase();
-    Map<String, dynamic> avisoMap = _toMap(aviso);
+     try{
+      final Database db = await getDatabase();
+      Map<String, dynamic> avisoMap = _toMap(aviso);
+      int idaviso = await db.insert(tablename, avisoMap);
+      final Notificacao notificacao = new Notificacao(0,0,idaviso,aviso.idpet ,aviso.datacadastro,"",aviso.datavencimento,'A');
+      notificacao.calculaInicio();
+      NotificacaoDao().save(notificacao);
 
-    final Notificacao notificacao = new Notificacao(0,0,aviso.id,aviso.idpet ,aviso.datacadastro,"",aviso.datavencimento,'A');
-    notificacao.calculaInicio();
-    NotificacaoDao().updateNotificacaoAviso(notificacao,idaviso);
-    return db.update(
-        tablename,
-        avisoMap,
-        where: '$_id = ?',
-        whereArgs: [idaviso]);
+      return idaviso;
+    }
+    catch(e, s){
+        FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro save Aviso');
+        throw('erro');
+    }
+  }
+  Future<int> updateAviso(Aviso aviso, int idaviso,[String StatusNotificacoa= "A"]) async {
+   try{
+      final Database db = await getDatabase();
+      Map<String, dynamic> avisoMap = _toMap(aviso);
+      final Notificacao notificacao = new Notificacao(0,0,aviso.id,aviso.idpet ,aviso.datacadastro,"",aviso.datavencimento,StatusNotificacoa);
+      notificacao.calculaInicio();
+      NotificacaoDao().updateNotificacaoAviso(notificacao,idaviso);
+      FirebaseCrashlytics.instance
+          .setCustomKey('example', 'flutterfire');
+      return db.update(
+          tablename,
+          avisoMap,
+          where: '$_id = ?',
+          whereArgs: [idaviso]);
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro updateAviso');
+      throw('erro');
+    }
   }
   Future<int> deleteAviso( int idaviso) async {
-    final Database db = await getDatabase();
-    return db.delete(
-        tablename,
-        where: '$_id = ?',
-        whereArgs: [idaviso]).whenComplete(() => (){
+    try{
+      final Database db = await getDatabase();
+      return db.delete(
+          tablename,
+          where: '$_id = ?',
+          whereArgs: [idaviso]).whenComplete(() => (){
         final NotificacaoDao notificacaoDao = new NotificacaoDao();
-         return notificacaoDao.deletenotificacaoAviso(idaviso);
-    });
+        return notificacaoDao.deletenotificacaoAviso(idaviso);
+      });
+    }
+    catch(e, s){
+       FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro deleteAviso');
+       throw('erro');
+    }
   }
   Future<int> deleteAvisoPet( int idpet) async {
-    final Database db = await getDatabase();
-    return db.delete(
-        tablename,
-        where: '$_idpet = ?',
-        whereArgs: [idpet]);
+
+    try{
+      final Database db = await getDatabase();
+      return db.delete(
+          tablename,
+          where: '$_idpet = ?',
+          whereArgs: [idpet]);
+    }
+    catch(e, s){
+       FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro deleteAvisoPet');
+       throw('erro');
+    }
   }
   List<Aviso> _toList(List<Map<String, dynamic>> result) {
     final List<Aviso> avisos = [];
@@ -140,15 +168,22 @@ class AvisoDao extends ChangeNotifier{
 
 
   static verificaAvisoVencendo( int id, int idnotivicacao) async {
-    final Database db = await getDatabase();
-    //final List<Map<String, dynamic>> result = await db.query(tablename,where: " $_id = $id");
-    final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome "
-        "from $tablename,$tablenamePet "
-        "where $tablename.id =  $id and $tablename.idpet = $tablenamePet.id  ORDER BY $_datavencimento DESC");
-    for (Map<String, dynamic> row in result) {
-      DateTime dt =new DateFormat('dd/MM/yyyy HH:mm:ss').parse(row[_datavencimento].toString() +' ' +DateTime.now().hour.toString() + ':'+ DateTime.now().minute.toString() +':22');
-      await notificationPlugin.scheduleNotification(idnotivicacao,datanotificacao: dt , titulo:"Aviso " +row[_nomeaviso].toString() ,
-          msg:'O aviso cadastrado para o Pet '+  row['nome'].toString() +'. Exipira dia ' + row[_datavencimento].toString());
+
+    try{
+      final Database db = await getDatabase();
+      //final List<Map<String, dynamic>> result = await db.query(tablename,where: " $_id = $id");
+      final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome "
+          "from $tablename,$tablenamePet "
+          "where $tablename.id =  $id and $tablename.idpet = $tablenamePet.id  ORDER BY $_datavencimento DESC");
+      for (Map<String, dynamic> row in result) {
+        DateTime dt =new DateFormat('dd/MM/yyyy HH:mm:ss').parse(row[_datavencimento].toString() +' ' +DateTime.now().hour.toString() + ':'+ DateTime.now().minute.toString() +':22');
+        await notificationPlugin.scheduleNotification(idnotivicacao,datanotificacao: dt , titulo:"Aviso " +row[_nomeaviso].toString() ,
+            msg:'O aviso cadastrado para o Pet '+  row['nome'].toString() +'. Exipira dia ' + row[_datavencimento].toString());
+      }
+    }
+    catch(e, s){
+       FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro verificaAvisoVencendo');
+       throw('erro');
     }
   }
 }

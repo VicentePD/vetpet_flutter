@@ -1,5 +1,6 @@
 
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sqflite/sqflite.dart';
@@ -37,62 +38,153 @@ class NotificacaoDao extends ChangeNotifier{
   static final String tablename = "notificacoes";
 
   Future<List<Notificacao>> findAllNotificacoes( ) async {
-    final Database db = await getDatabase();
+
+    try{
+      final Database db = await getDatabase();
       final List<Map<String, dynamic>> result = await db.query(tablename);
       List<Notificacao> notificacao = _toList(result);
       notifyListeners();
       return notificacao;
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findAllNotificacoes');
+      List<Notificacao> notificacao  = []  ;
+     return notificacao;
+    }
   }
   Future<Notificacao> findNotificacao(int id) async {
-    final Database db = await getDatabase();
-    final List<Map<String, dynamic>> result = await db.query(tablename, where: " $_id = $id");
-    Notificacao notificacao = _toNotificacao(result);
+    Notificacao notificacao = new Notificacao(0,0,0,0,'','','','');
+    try{
+      final Database db = await getDatabase();
+      final List<Map<String, dynamic>> result = await db.query(tablename, where: " $_id = $id");
+      notificacao = _toNotificacao(result);
+      return notificacao;
+    }
+    catch(e, s){
+       FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findNotificacao');
     return notificacao;
   }
-
+  }
+  Future<Notificacao> findNotificacaoVacina(int idvacina) async {
+    Notificacao notificacao = new Notificacao(0,0,0,0,'','','','');
+    try{
+      final Database db = await getDatabase();
+      final List<Map<String, dynamic>> result = await db.query(tablename, where: " $_idvacina = $idvacina");
+      notificacao = _toNotificacao(result);
+      return notificacao;
+    }
+    catch(e, s){
+     FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findNotificacaoVacina');
+     return notificacao;
+    }
+  }
   Future<int> save(Notificacao notificacao) async {
-    final Database db = await getDatabase();
-    notificacao.calculaInicio();
-    Map<String, dynamic> notificacaoMap = _toMap(notificacao);
-    return db.insert(tablename, notificacaoMap);
+    try{
+      final Database db = await getDatabase();
+      notificacao.calculaInicio();
+      Map<String, dynamic> notificacaoMap = _toMap(notificacao);
+      return db.insert(tablename, notificacaoMap);
+    }
+    catch(e, s){
+     FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro save Notificação');
+    return 0;
+    }
   }
   Future<int> updateNotificacaoAviso(Notificacao notificacao, int id) async {
-    final Database db = await getDatabase();
-    notificacao.calculaInicio();
-    Map<String, dynamic> notificacaoMap = _toMap(notificacao);
-    return db.update(
-        tablename,
-        notificacaoMap,
-        where: '$_idaviso = ?',
-        whereArgs: [id]);
+    try{
+      final Database db = await getDatabase();
+      notificacao.calculaInicio();
+      Map<String, dynamic> notificacaoMap = _toMap(notificacao);
+      if(notificacao.status != "A"){
+        _cancelaNotificacao(id,0);
+      }
+      return db.update(
+          tablename,
+          notificacaoMap,
+          where: '$_idaviso = ?',
+          whereArgs: [id]);
+  }
+  catch(e, s){
+    FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro updateNotificacaoAviso');
+  return 0;
+  }
+
+}
+  Future<int> updateNotificacaoVacina(Notificacao notificacao, int idvacina) async {
+    try{
+      final Database db = await getDatabase();
+      notificacao.calculaInicio();
+      Map<String, dynamic> notificacaoMap = _toMap(notificacao);
+      if(notificacao.status != "A"){
+        _cancelaNotificacao(0,idvacina);
+      }
+      return db.update(
+          tablename,
+          notificacaoMap,
+          where: '$_idvacina = ?',
+          whereArgs: [idvacina]);
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro updateNotificacaoVacina');
+      return 0;
+    }
+
   }
   Future<int> deletenotificacao( int id) async {
-    final Database db = await getDatabase();
-    return db.delete(
-        tablename,
-        where: '$_id = ?',
-        whereArgs: [id]);
+    try{
+      final Database db = await getDatabase();
+      notificationPlugin.cancelNotification(id);
+      return db.delete(
+          tablename,
+          where: '$_id = ?',
+          whereArgs: [id]);
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro deletenotificacao');
+      return 0;
+    }
   }
   Future<int> deletenotificacaoAviso( int idaviso) async {
-    final Database db = await getDatabase();
-    return db.delete(
-        tablename,
-        where: '$_idaviso = ?',
-        whereArgs: [idaviso]);
+    try{
+      final Database db = await getDatabase();
+      _cancelaNotificacao(idaviso,0);
+      return db.delete(
+
+          tablename,
+          where: '$_idaviso = ?',
+          whereArgs: [idaviso]);
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro deletenotificacaoAviso');
+      return 0;
+    }
   }
   Future<int> deletenotificacaoVacina(int id) async {
-    final Database db = await getDatabase();
-    return db.delete(
-        tablename,
-        where: '$_idvacina = ?',
-        whereArgs: [id]);
+    try{
+      final Database db = await getDatabase();
+      _cancelaNotificacao(0,id);
+      return db.delete(
+          tablename,
+          where: '$_idvacina = ?',
+          whereArgs: [id]);
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro deletenotificacaoVacina');
+      return 0;
+    }
   }
   Future<int> deletenotificacaoPet(int idpet) async {
-    final Database db = await getDatabase();
-    return db.delete(
-        tablename,
-        where: '$_idpet = ?',
-        whereArgs: [idpet]);
+    try{
+      final Database db = await getDatabase();
+      return db.delete(
+          tablename,
+          where: '$_idpet = ?',
+          whereArgs: [idpet]);
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro deletenotificacaoPet');
+      return 0;
+    }
   }
   List<Notificacao> _toList(List<Map<String, dynamic>> result) {
     final List<Notificacao> notificacoes = [];
@@ -111,7 +203,6 @@ class NotificacaoDao extends ChangeNotifier{
           row[_idpet],  row[_datacadastro], row[_datainicio],row[_datavencimento], row[_status]);
       notificacoes.add(notificacao);
     }
-
     return notificacoes.first;
   }
   Map<String, dynamic> _toMap(Notificacao notificacao) {
@@ -120,6 +211,7 @@ class NotificacaoDao extends ChangeNotifier{
     // pettMap[_id] = pet.id;
     notificacaoMap[_idvacina] = notificacao.idvacina;
     notificacaoMap[_idaviso] = notificacao.idaviso;
+    notificacaoMap[_idpet] = notificacao.idpet;
     notificacaoMap[_datacadastro]= notificacao.datacadastro ;
     notificacaoMap[_datainicio]= notificacao.datainicio;
     notificacaoMap[_datavencimento]= notificacao.datavencimento;
@@ -146,11 +238,9 @@ class NotificacaoDao extends ChangeNotifier{
     final DateTime dtb = DateTime.now().add(Duration(days:-5));
     final String dtBuscaAviso = dtb.year.toString()  + dtb.month.toString().padLeft(2,'0') + dtb.day.toString().padLeft(2,'0')  ;
     final Database db = await getDatabase();
-    developer.log(' inativaNotificacao Data Busca $dtBuscaAviso');
     final List<Map<String, dynamic>> result = await db.query(tablename , where: " substr($_datavencimento,7)||substr($_datavencimento,4,2)||substr($_datavencimento,1,2) <= '$dtBuscaAviso' and $_status = 'A'");
     int count= 0 ;
     for (Map<String, dynamic> row in result) {
-      developer.log('Inativando Data Busca ' + row[_datainicio].toString());
        count = await db.rawUpdate("UPDATE $tablename SET $_status = 'I' WHERE $_id = ?",
            [row[_id]]);
       await notificationPlugin.cancelNotification(row[_id]);
@@ -158,6 +248,18 @@ class NotificacaoDao extends ChangeNotifier{
     return count;
 
   }
+
+  _cancelaNotificacao(int idaviso,int idvacina ) async {
+    final Database db = await getDatabase();
+    final List<Map<String, dynamic>> result = await db.query(tablename , where: " $_idaviso = $idaviso "
+        "and $_idvacina = $idvacina");
+    //int count= 0 ;
+    for (Map<String, dynamic> row in result) {
+      await notificationPlugin.cancelNotification(row[_id]);
+    }
+  }
+
+
 
 
 }

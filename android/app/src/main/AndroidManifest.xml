@@ -6,7 +6,7 @@
 
    <application
         android:label="vetpet"
-        android:icon="@mipmap/app_icon">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -41,5 +41,5 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-    </application>
+   </application>
 </manifest>
