@@ -2,12 +2,10 @@
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
 
-import 'package:intl/intl.dart';
 import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:vetpet/helpers/NotificacaoPlugin.dart';
 import 'package:vetpet/model/notificacao.dart';
@@ -76,6 +74,19 @@ class NotificacaoDao extends ChangeNotifier{
     catch(e, s){
      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findNotificacaoVacina');
      return notificacao;
+    }
+  }
+  Future<Notificacao> findNotificacaoAviso(int idaviso) async {
+    Notificacao notificacao = new Notificacao(0,0,0,0,'','','','');
+    try{
+      final Database db = await getDatabase();
+      final List<Map<String, dynamic>> result = await db.query(tablename, where: " $_idaviso = $idaviso");
+      notificacao = _toNotificacao(result);
+      return notificacao;
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findNotificacaoVacina');
+      return notificacao;
     }
   }
   Future<int> save(Notificacao notificacao) async {
@@ -222,10 +233,10 @@ class NotificacaoDao extends ChangeNotifier{
   static verificaNotificacao( ) async {
     final String dtBuscaAviso = DateTime.now().year.toString() + DateTime.now().month.toString().padLeft(2,'0') +DateTime.now().day.toString().padLeft(2,'0')   ;
     final Database db = await getDatabase();
-    developer.log('verificaNotificacao $dtBuscaAviso');
-    final List<Map<String, dynamic>> result_Not = await db.query(tablename , where: " substr($_datainicio,7)||substr($_datainicio,4,2)||substr($_datainicio,1,2)  <= '$dtBuscaAviso' AND $_status = 'A'");
-    for (Map<String, dynamic> row in result_Not) {
-      developer.log('verificaNotificacao $dtBuscaAviso');
+   // developer.log('verificaNotificacao $dtBuscaAviso');
+    final List<Map<String, dynamic>> resultnot = await db.query(tablename , where: " substr($_datainicio,7)||substr($_datainicio,4,2)||substr($_datainicio,1,2)  <= '$dtBuscaAviso' AND $_status = 'A'");
+    for (Map<String, dynamic> row in resultnot) {
+    //  developer.log('verificaNotificacao $dtBuscaAviso');
       if(row[_idaviso] > 0)
          AvisoDao.verificaAvisoVencendo(row[_idaviso], row[_id]);
       if(row[_idvacina] > 0)

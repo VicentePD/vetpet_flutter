@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:vetpet/database/database.dart';
 import 'package:vetpet/model/pet.dart';
-import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
 
 import 'aviso_dao.dart';
 import 'notificacao_dao.dart';
@@ -100,7 +100,7 @@ class PetDao extends ChangeNotifier{
   }
   Map<String, dynamic> _toMap(Pet pet) {
     final Map<String, dynamic> pettMap = Map();
-    developer.log("teteeee $pet");
+   // developer.log("teteeee $pet");
    // pettMap[_id] = pet.id;
     pettMap[_nome] = pet.nome;
     pettMap[_datanascimento] = pet.datanascimento;

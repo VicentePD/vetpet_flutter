@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/cupertino.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:vetpet/database/dao/vacina_dao.dart';
-import 'package:vetpet/model/pet.dart';
+//import 'package:vetpet/model/pet.dart';
 
 import 'dao/aviso_dao.dart';
 import 'dao/notificacao_dao.dart';

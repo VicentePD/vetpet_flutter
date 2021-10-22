@@ -143,7 +143,6 @@ class NotificationPlugin {
 
   Future<void> scheduleNotification( int id, {required String titulo,  required String msg, required DateTime datanotificacao} ) async {
     tz.TZDateTime scheduleNotificationDateTime = tz.TZDateTime.from(datanotificacao, tz.local);
-    developer.log('  msg id ' + id.toString());
     var androidChannelSpecifics = AndroidNotificationDetails(
       'VETPET'  ,
       'VETPET' ,

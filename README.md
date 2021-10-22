@@ -1,6 +1,6 @@
 # vetpet
 
-Vacinas dos Pets
+Avisos para o seu Pet
 
 ## Getting Started
 

@@ -2,17 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:vetpet/components/petselecionado.dart';
 import 'package:vetpet/database/dao/aviso_dao.dart';
+import 'package:vetpet/helpers/estilos.dart';
 
 import 'package:vetpet/helpers/imagemutil.dart';
 import 'package:vetpet/model/aviso.dart';
 
 import 'cadastros/cadastroaviso.dart';
-import 'cadastros/cadastrovacina.dart';
+//import 'cadastros/cadastrovacina.dart';
 import '../helpers/globals.dart' as globals;
 class AvisoScreen extends StatefulWidget {
- // final List<Vacina> _vacinas = [];
-  final String texto;
-  AvisoScreen(this.texto);
+  AvisoScreen();
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -61,7 +60,7 @@ class AvisoScreenState extends State<AvisoScreen> {
         initialData: [],
         future: AvisoDao().findAllAvisos(globals.idpetsel),
         builder: (context, snapshot) {
-          Widget corp = Row(children:<Widget>[Text("Nenhum Aviso Cadastrado!")]);
+          Widget corp = Row(children:<Widget>[Text("Nenhum Aviso Cadastrado!",  style:  Estilos.EstiloTexto_1(),)]);
           switch (snapshot.connectionState) {
             case ConnectionState.none:
               break;
@@ -80,12 +79,12 @@ class AvisoScreenState extends State<AvisoScreen> {
             case ConnectionState.active:
               break;
             case ConnectionState.done:
-              if (snapshot.data != null && snapshot.data!.isNotEmpty  ) {
+              if (snapshot.data != null && snapshot.data!.length >0  ) {
                 final List<Aviso>? avisos = snapshot.data;
                 corp = ListView.builder(
                   itemBuilder: (context, index) {
                     final Aviso aviso = avisos![index];
-                    final String NomePet = globals.idpetsel == 0? "Nome:"+ aviso.nomepet +"\n":"";
+                    final String nomePet = globals.idpetsel == 0? "Nome:"+ aviso.nomepet +"\n":"";
                     return  SizedBox (
                       // height: height,
                         child:Card(
@@ -95,7 +94,7 @@ class AvisoScreenState extends State<AvisoScreen> {
                                 ListTile(
                                   leading: Icon(Icons.timer),
                                   title: Text("Aviso:" + aviso.nomeaviso.toString()),
-                                  subtitle: Text(NomePet + "Data Do Cadastro:" +aviso.datacadastro.toString()+"\nData de Expiração: "
+                                  subtitle: Text(nomePet + "Data Do Cadastro:" +aviso.datacadastro.toString()+"\nData de Expiração: "
                                       + aviso.datavencimento.toString()),
                                   isThreeLine:true,
                                   onLongPress: () {Navigator.push(context,
@@ -117,7 +116,7 @@ class AvisoScreenState extends State<AvisoScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text('Nenhum Aviso Cadastrado.'),
+                      Text('Nenhum Aviso Cadastrado.', style:  Estilos.EstiloTexto_1()),
                     ],
                   ),
                 );

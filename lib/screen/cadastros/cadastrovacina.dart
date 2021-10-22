@@ -225,7 +225,6 @@ class CadastroVacinaState extends State<CadastroVacina> {
     NotificacaoDao _daonotificacao = new NotificacaoDao();
     _daonotificacao.findNotificacaoVacina(id).then((value) => {
       setState(() {
-        developer.log("Seleciona Vacina  st " +value.status);
         if(value.status != "A"){
           isChecked = true;
          }

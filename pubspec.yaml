@@ -1,5 +1,5 @@
 name: vetpet
-description: Vacinas dos Pets
+description: Avisos para o seu Pet
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -43,21 +43,14 @@ dependencies:
   flutter_native_splash: ^1.2.3
   firebase_crashlytics: ^2.2.3
   firebase_core: ^1.7.0
- # shared_preferences: ^0.5.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  provider:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-flutter_icons:
-  image_path_android: "asset/icon/icon-710x599-android.png"
-  android: true
-  ios: true
-  image_path: "asset/icon/icon-710x599-android.png"
-  adaptive_icon_background: "asset/icon/background.png"
-  adaptive_icon_foreground: "asset/icon/icon-foreground.png"
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -71,7 +64,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - asset/images/_MG_9521.jpg
+    - asset/images/_MG_9521.jpg
+  #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -99,5 +93,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-flutter_native_splash:
-  color: "#42a5f5"

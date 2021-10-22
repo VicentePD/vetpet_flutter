@@ -9,8 +9,8 @@ import 'package:vetpet/model/vacina.dart';
 
 import '../database.dart';
 import 'notificacao_dao.dart';
-import 'dart:developer' as developer;
-import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
 import 'package:intl/intl.dart';
 class Vacina_Dao extends ChangeNotifier{
 
@@ -64,7 +64,39 @@ class Vacina_Dao extends ChangeNotifier{
     Vacina vacina = _toVacina(result);
     return vacina;
   }
+  Future<String> findPetsComVacinasVencendo( ) async {
+    final Database db = await getDatabase();
+    DateTime dtb = DateTime.now().add(Duration(days: 30));
+    final String dtBuscaVacina = dtb.year.toString() + dtb.month.toString().padLeft(2,'0') +dtb.day.toString().padLeft(2,'0') ;
+    //developer.log(dtBuscaVacina);
+    String msg = "";
+    try{
+      //final List<Map<String, dynamic>> result = await db.query(tablename,orderBy: "$_dataretorno DESC");
+        final List<Map<String, dynamic>> result = await db.rawQuery("SELECT DISTINCT $tablenamePet.nome from $tablename,$tablenamePet "
+            "where $tablename.id_pet = $tablenamePet.id  "
+            "and substr($_dataretorno,7)||substr($_dataretorno,4,2)||substr($_dataretorno,1,2)  <= '$dtBuscaVacina' "
+            "and substr($_dataretorno,7)||substr($_dataretorno,4,2)||substr($_dataretorno,1,2)  >= '"
+            + DateTime.now().year.toString() + DateTime.now().month.toString().padLeft(2,'0') +DateTime.now().day.toString().padLeft(2,'0') +
+            "'  ORDER BY $_dataretorno DESC");
 
+        if(result.isNotEmpty && result.length > 0){
+          msg = "As Vacinas do(s) Pets";
+          for (Map<String, dynamic> row in result) {
+            msg  += ", " + row['nome'].toString() ;
+          }
+          msg += " estão próximo do vencimento.";
+        }
+        else{
+          msg = "Não existe vacina vencendo nos próximos dias.";
+        }
+
+        return msg;
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findPetsComVacinasVencendo');
+      throw('erro');
+    }
+  }
   Future<int> save(Vacina vacina) async {
     try{
         final Database db = await getDatabase();
@@ -130,7 +162,7 @@ class Vacina_Dao extends ChangeNotifier{
   List<Vacina> _toList(List<Map<String, dynamic>> result) {
     final List<Vacina> vacinas = [];
     for (Map<String, dynamic> row in result) {
-      developer.log("_toList $row");
+     // developer.log("_toList $row");
       if(row.length == 7)
       {
         final Vacina vacina = Vacina(row[_id], row[_id_pet], row[_nome_vacina],

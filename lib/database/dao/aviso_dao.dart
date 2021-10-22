@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vetpet/helpers/NotificacaoPlugin.dart';
 import 'package:vetpet/model/aviso.dart';
-import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
 import 'package:intl/intl.dart';
 import 'package:vetpet/model/notificacao.dart';
 import 'package:vetpet/database/dao/notificacao_dao.dart';
@@ -57,6 +57,38 @@ class AvisoDao extends ChangeNotifier{
     Aviso aviso = _toAviso(result);
     return aviso;
   }
+  Future<String> findPetsComAvisosVencendo( ) async {
+    final Database db = await getDatabase();
+    DateTime dtb = DateTime.now().add(Duration(days: 30));
+    final String dtBuscaVacina = dtb.year.toString() + dtb.month.toString().padLeft(2,'0') +dtb.day.toString().padLeft(2,'0') ;
+    String msg = "";
+    try{
+      //final List<Map<String, dynamic>> result = await db.query(tablename,orderBy: "$_dataretorno DESC");
+      final List<Map<String, dynamic>> result = await db.rawQuery("SELECT DISTINCT $tablenamePet.nome from $tablename, $tablenamePet "
+          "where $tablename.idpet = $tablenamePet.id  "
+          "and substr($_datavencimento,7)||substr($_datavencimento,4,2)||substr($_datavencimento,1,2)  <= '$dtBuscaVacina' "
+          "and substr($_datavencimento,7)||substr($_datavencimento,4,2)||substr($_datavencimento,1,2)  >= '"
+          + DateTime.now().year.toString() + DateTime.now().month.toString().padLeft(2,'0') +DateTime.now().day.toString().padLeft(2,'0') +
+          "'  ORDER BY $_datavencimento DESC");
+
+      if(result.isNotEmpty && result.length > 0){
+        msg = "Os Avisos do(s) Pet(s)";
+        for (Map<String, dynamic> row in result) {
+          msg  += ", " + row['nome'].toString() ;
+        }
+        msg += " estão próximo do vencimento.";
+      }
+      else{
+        msg = "Não existe Aviso vencendo nos próximos dias.";
+      }
+
+      return msg;
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findPetsComAvisosVencendo');
+      throw('erro');
+    }
+  }
 
   Future<int> save(Aviso aviso) async {
      try{
@@ -74,15 +106,13 @@ class AvisoDao extends ChangeNotifier{
         throw('erro');
     }
   }
-  Future<int> updateAviso(Aviso aviso, int idaviso,[String StatusNotificacoa= "A"]) async {
+  Future<int> updateAviso(Aviso aviso, int idaviso,[String statusNotificacoa= "A"]) async {
    try{
       final Database db = await getDatabase();
       Map<String, dynamic> avisoMap = _toMap(aviso);
-      final Notificacao notificacao = new Notificacao(0,0,aviso.id,aviso.idpet ,aviso.datacadastro,"",aviso.datavencimento,StatusNotificacoa);
+      final Notificacao notificacao = new Notificacao(0,0,aviso.id,aviso.idpet ,aviso.datacadastro,"",aviso.datavencimento,statusNotificacoa);
       notificacao.calculaInicio();
       NotificacaoDao().updateNotificacaoAviso(notificacao,idaviso);
-      FirebaseCrashlytics.instance
-          .setCustomKey('example', 'flutterfire');
       return db.update(
           tablename,
           avisoMap,

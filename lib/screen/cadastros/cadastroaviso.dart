@@ -235,6 +235,14 @@ class CadastroAvisoState extends State<CadastroAviso> {
   }
 
   _selectaviso(int id) async {
+    NotificacaoDao _daonotificacao = new NotificacaoDao();
+    _daonotificacao.findNotificacaoAviso(id).then((value) => {
+      setState(() {
+        if(value.status != "A"){
+          isChecked = true;
+        }
+      })
+    });
     _daoaviso.findAviso(id).then((value) => {
           setState(() {
             aviso = value;

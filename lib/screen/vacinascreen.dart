@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vetpet/components/petselecionado.dart';
 
 import 'package:vetpet/database/dao/vacina_dao.dart';
+import 'package:vetpet/helpers/estilos.dart';
 import 'package:vetpet/helpers/imagemutil.dart';
 import 'package:vetpet/model/vacina.dart';
 
@@ -80,7 +81,7 @@ class VacinaScreenState extends State<VacinaScreen> {
             case ConnectionState.active:
               break;
             case ConnectionState.done:
-              if (snapshot.data != null) {
+              if (snapshot.data != null &&  snapshot.data!.length >0 ) {
                 final List<Vacina>? vacinas = snapshot.data;
                 corp = ListView.builder(
                   itemBuilder: (context, index) {
@@ -117,7 +118,7 @@ class VacinaScreenState extends State<VacinaScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text('Nenhuma Vacina Cadastrada.'),
+                      Text('Nenhuma Vacina Cadastrada.', style:  Estilos.EstiloTexto_1(),),
                     ],
                   ),
                 );

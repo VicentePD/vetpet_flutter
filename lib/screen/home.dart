@@ -3,14 +3,12 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:vetpet/screen/petscreen.dart';
-import 'package:vetpet/screen/teste.dart';
+import 'package:vetpet/screen/sobre.dart';
 
 import 'package:vetpet/screen/vacinascreen.dart';
 
 import 'listaavisos.dart';
-import 'package:vetpet/database/dao/aviso_dao.dart';
 
 const _kShouldTestAsyncErrorOnInit = false;
 
@@ -24,15 +22,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  int _selectedIndex = 3;
-  late Future<void> _initializeFlutterFireFuture;
+  int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   final   List<Widget> _widgetOptions = [
     PetScreen(),
     VacinaScreen("Vacinas"),
-    AvisoScreen("Vacinas"),
+    AvisoScreen(),
     LocalNotificationScreen()
       ];
   Future<void> _testAsyncErrorOnInit() async {
@@ -48,15 +45,12 @@ class _HomePage extends State<HomePage> {
     if (_kTestingCrashlytics) {
       // Force enable crashlytics collection enabled if we're testing it.
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-      FirebaseCrashlytics.instance
-          .log('This is a log example _kTestingCrashlytics _initializeFlutterFire');
     } else {
       // Else only enable it in non-debug builds.
       // You could additionally extend this to allow users to opt-in.
       await FirebaseCrashlytics.instance
           .setCrashlyticsCollectionEnabled(!kDebugMode);
     }
-
     if (_kShouldTestAsyncErrorOnInit) {
       await _testAsyncErrorOnInit();
     }
@@ -65,7 +59,7 @@ class _HomePage extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _initializeFlutterFireFuture = _initializeFlutterFire();
+     _initializeFlutterFire();
   }
 
   void _onItemTapped(int index) {
