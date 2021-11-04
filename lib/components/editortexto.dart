@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'dart:developer' as developer;
+//import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+//import 'dart:developer' as developer;
 class EditorTexto extends StatelessWidget {
   final TextEditingController controlador;
   final String rotulo;
@@ -25,7 +25,7 @@ class EditorTexto extends StatelessWidget {
         validator: (value) =>_validarCampo(value,obrigatorio) ,
         style: TextStyle(fontSize: 16.0),
         decoration: InputDecoration(
-          icon: icone != null ? Icon(icone) : null,
+          icon: icone != null ? Icon(icone,semanticLabel: rotulo) : null,
           labelText: rotulo,
           hintText: dica,
         ),

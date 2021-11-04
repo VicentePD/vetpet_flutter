@@ -10,6 +10,7 @@ import 'package:vetpet/helpers/imagemutil.dart';
 import 'package:vetpet/model/pet.dart';
 //import 'dart:developer' as developer;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:vetpet/rotas/rotas.dart';
 import 'cadastros/cadastropet.dart';
 import '../helpers/globals.dart' as globals;
 
@@ -30,13 +31,14 @@ class PetScreenState extends State<PetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orangeAccent,
       appBar: AppBar(
         title: Text("Pets"),
       ),
       body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-            image: AssetImage("asset/images/_MG_9521.jpg"),
+            image: AssetImage("asset/images/bgpata.png"),
             fit: BoxFit.cover,
           )),
           child: Column(children: [
@@ -50,7 +52,7 @@ class PetScreenState extends State<PetScreen> {
             ),SizedBox(height: 15.h),
           ])),
       floatingActionButton: FloatingActionButton(mini: false,
-        child: Icon(Icons.add),
+        child: Icon(Icons.add,semanticLabel: "Incluir Pet"),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return CadastroPet(0);
@@ -79,11 +81,12 @@ class PetScreenState extends State<PetScreen> {
                 child: InkWell(
                   splashColor: Colors.orange.withAlpha(30),
                   onTap: () {
+                    Navigator.of(context).push(createRouteVacina());
                   },
                   child: Column(children: [ Row(mainAxisAlignment: MainAxisAlignment.center ,
                     children: [Icon(Icons.medical_services),Text('Alerta Vacinas.')],) ,SizedBox(
-                    // width: 300,
-                    //height: 100,
+                     width: 300,
+                  //  height: 100,
                     child: Text('${snapshot.data} \n'),
                   )],) ,
                 ),
@@ -96,7 +99,7 @@ class PetScreenState extends State<PetScreen> {
               padding: EdgeInsets.only(top: 16),
               child: Text(
                 'Esperando a consulta...',
-                style: Estilos.EstiloTextoNegrito_1(),
+                style: Estilos.EstiloTextoBranco_1(),
               ),
             )
           ];
@@ -118,18 +121,19 @@ class PetScreenState extends State<PetScreen> {
       builder: (context, snapshot) {
         List<Widget> children;
         if (snapshot.hasData) {
-          children = <Widget>[
+          children = <Widget>[const SizedBox(width: 8),
             Center(
               child: Card(
                 child: InkWell(
-                  splashColor: Colors.orange.withAlpha(30),
+                  splashColor: Colors.orange.withAlpha(90),
                   onTap: () {
+                    Navigator.of(context).push(createRouteAlerta());
                   },
                   child: Column(children: [ Row(mainAxisAlignment: MainAxisAlignment.center ,
-                    children: [Icon(Icons.timer),Text('Alerta Avisos.')],) ,SizedBox(
-                    // width: 300,
+                    children: [Icon(Icons.timer),Text(' Alerta Avisos.',semanticsLabel: "Alerta de Avisos Vecendo",)],) ,SizedBox(
+                     width: 300,
                     //height: 100,
-                    child: Text('${snapshot.data} \n'),
+                    child: Text('${snapshot.data} \n',semanticsLabel:snapshot.data ),
                   )],) ,
                 ),
               ),
@@ -141,7 +145,7 @@ class PetScreenState extends State<PetScreen> {
               padding: EdgeInsets.only(top: 16),
               child: Text(
                 'Esperando a consulta...',
-                style: Estilos.EstiloTextoNegrito_1(),
+                style: Estilos.EstiloTextoNegritoBranco_1(),
               ),
             )
           ];
@@ -172,7 +176,7 @@ class PetScreenState extends State<PetScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     CircularProgressIndicator(),
-                    Text('Loading')
+                    Text('Loading',style: Estilos.EstiloTextoNegritoBranco_1(),)
                   ],
                 ),
               );
@@ -251,7 +255,7 @@ class PetScreenState extends State<PetScreen> {
                     children: <Widget>[
                       Text(
                         'Nenum Pet Cadastrado.',
-                        style: Estilos.EstiloTexto_1(),
+                        style: Estilos.EstiloTextoNegritoBranco_1(),
                       ),
                     ],
                   ),

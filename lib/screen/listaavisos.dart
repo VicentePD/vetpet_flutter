@@ -11,7 +11,8 @@ import 'cadastros/cadastroaviso.dart';
 //import 'cadastros/cadastrovacina.dart';
 import '../helpers/globals.dart' as globals;
 class AvisoScreen extends StatefulWidget {
-  AvisoScreen();
+  final String operacao;
+  AvisoScreen({this.operacao=""});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -24,13 +25,14 @@ class AvisoScreenState extends State<AvisoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orangeAccent,
       appBar: AppBar(
-        title: Text("Alertas"),
+        title: widget.operacao == ""? Text("Avisos"): Text("Alerta Avisos"),
       ),
       body: Container(
-      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/_MG_9521.jpg"),
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/bgpata.png"),
     fit: BoxFit.cover,)),
-    child:globals.idpetsel == 0? _avisoList(_atualiza) :Column(
+    child:globals.idpetsel == 0 || widget.operacao != ""? _avisoList(_atualiza) :Column(
           children: <Widget>[Expanded(
             child: PetSelecionado(),
             flex: 0,
@@ -38,7 +40,7 @@ class AvisoScreenState extends State<AvisoScreen> {
             child: _avisoList(_atualiza  ),
           )] )),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: Icon(Icons.add,semanticLabel: "Incluir Aviso"),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return CadastroAviso(0);
@@ -58,9 +60,9 @@ class AvisoScreenState extends State<AvisoScreen> {
 
     return FutureBuilder<List<Aviso>>(
         initialData: [],
-        future: AvisoDao().findAllAvisos(globals.idpetsel),
+        future: widget.operacao == ""? AvisoDao().findAllAvisos(globals.idpetsel): AvisoDao().findVacinasVencendo() ,
         builder: (context, snapshot) {
-          Widget corp = Row(children:<Widget>[Text("Nenhum Aviso Cadastrado!",  style:  Estilos.EstiloTexto_1(),)]);
+          Widget corp = Row(children:<Widget>[Text("Nenhum Aviso Cadastrado!",  style:  Estilos.EstiloTextoBranco_1(),)]);
           switch (snapshot.connectionState) {
             case ConnectionState.none:
               break;
@@ -84,7 +86,7 @@ class AvisoScreenState extends State<AvisoScreen> {
                 corp = ListView.builder(
                   itemBuilder: (context, index) {
                     final Aviso aviso = avisos![index];
-                    final String nomePet = globals.idpetsel == 0? "Nome:"+ aviso.nomepet +"\n":"";
+                    final String nomePet = globals.idpetsel == 0 || widget.operacao != ""? "Nome:"+ aviso.nomepet +"\n":"";
                     return  SizedBox (
                       // height: height,
                         child:Card(
@@ -116,7 +118,7 @@ class AvisoScreenState extends State<AvisoScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text('Nenhum Aviso Cadastrado.', style:  Estilos.EstiloTexto_1()),
+                      Text('Nenhum Aviso Cadastrado.', style:  Estilos.EstiloTextoBranco_1()),
                     ],
                   ),
                 );

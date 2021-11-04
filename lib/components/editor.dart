@@ -24,7 +24,7 @@ class Editor extends StatelessWidget {
         inputFormatters: [defineMascara(mascara)],
         style: TextStyle(fontSize: 24.0),
         decoration: InputDecoration(
-          icon: icone != null ? Icon(icone) : null,
+          icon:  Icon(icone,semanticLabel: rotulo ,) ,
           labelText: rotulo,
           hintText: dica,
         ),
@@ -38,7 +38,6 @@ MaskTextInputFormatter defineMascara(String tipomask) {
   switch (tipomask) {
     case "Data":
       return new MaskTextInputFormatter(mask: "##/##/####");
-      break;
   }
   return new MaskTextInputFormatter(mask: "");
 }

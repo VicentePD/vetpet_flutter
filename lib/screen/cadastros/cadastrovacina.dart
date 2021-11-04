@@ -14,7 +14,7 @@ import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:intl/intl.dart';
 import 'package:vetpet/helpers/alertmsgutil.dart';
 
-import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
 
 import 'package:vetpet/model/vacina.dart';
 import 'package:vetpet/screen/petscreen.dart';
@@ -76,13 +76,11 @@ class CadastroVacinaState extends State<CadastroVacina> {
             child: Column(children: <Widget>[
           GestureDetector(
             onTap: () {
-              if (globals.idpetsel == 0) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return PetScreen();
                 })).then(
                   (value) => setState(() {}),
                 );
-              }
             },
             child: PetSelecionado(),
           ),
@@ -126,13 +124,8 @@ class CadastroVacinaState extends State<CadastroVacina> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ElevatedButton(
-                        child: Text(_textoBotaoConfirmar),
-                        onPressed: () => _cadastrarVacina(context),
-                      ),
-                      Text(widget.idvacina > 0 ? "    " : ""),
-                      widget.idvacina > 0
-                          ? ElevatedButton(
+
+                      widget.idvacina > 0 ? ElevatedButton(
                               child: Text("Excluir"),
                               style: ButtonStyle(
                                   backgroundColor:
@@ -140,7 +133,14 @@ class CadastroVacinaState extends State<CadastroVacina> {
                                           Colors.red)),
                               onPressed: () => _deleteVacina(context),
                             )
+
                           : Text(""),
+
+                      Text(widget.idvacina > 0 ? "    " : ""),
+                      ElevatedButton(
+                        child: Text(_textoBotaoConfirmar),
+                        onPressed: () => _cadastrarVacina(context),
+                      ),
                     ],
                   ),
                 ],
@@ -221,7 +221,7 @@ class CadastroVacinaState extends State<CadastroVacina> {
   }
 
   _selectvacina(int id) async {
-    developer.log("Seleciona Vacina " +id.toString());
+    //developer.log("Seleciona Vacina " +id.toString());
     NotificacaoDao _daonotificacao = new NotificacaoDao();
     _daonotificacao.findNotificacaoVacina(id).then((value) => {
       setState(() {

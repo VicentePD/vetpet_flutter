@@ -7,7 +7,18 @@ class Estilos {
       color: Colors.orange,
     );
   }
-
+  static TextStyle EstiloTextoBranco_1() {
+    return TextStyle(
+      color: Colors.white,
+    );
+  }
+  static TextStyle EstiloTextoNegritoBranco_1() {
+    return TextStyle(
+      color: Colors.white,
+      fontSize: ScreenUtil().setSp(14),
+      fontWeight: FontWeight.bold,
+    );
+  }
   static TextStyle EstiloTextoNegrito_1() {
     return TextStyle(
       color: Colors.orange,

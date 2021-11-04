@@ -39,9 +39,8 @@ class Vacina_Dao extends ChangeNotifier{
         }
         else{
           //final List<Map<String, dynamic>> result = await db.query(tablename,orderBy: "$_dataretorno DESC");
-          final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome from $tablename,$tablenamePet where $tablename.id_pet = $tablenamePet.id  ORDER BY $_dataretorno DESC");
+          final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome from $tablename,$tablenamePet where $tablename.id_pet = $tablenamePet.id  ORDER BY $tablename.$_dataretorno ASC");
           List<Vacina> vacinas = _toList(result);
-          notifyListeners();
           return vacinas;
         }
    }
@@ -51,18 +50,52 @@ class Vacina_Dao extends ChangeNotifier{
     }
   }
   Future<List<Vacina>> findAllVacinasPet(int idpetsel) async {
+    try{
+      final Database db = await getDatabase();
+      final List<Map<String, dynamic>> result = await db.query(tablename,where: " $_id_pet = $idpetsel",orderBy: "$_dataretorno DESC");
+      List<Vacina> vacinas = _toList(result);
+      notifyListeners();
+      return vacinas;
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findAllVacinas');
+      throw('erro');
+    }
 
-    final Database db = await getDatabase();
-    final List<Map<String, dynamic>> result = await db.query(tablename,where: " $_id_pet = $idpetsel",orderBy: "$_dataretorno DESC");
-    List<Vacina> vacinas = _toList(result);
-    notifyListeners();
-    return vacinas;
   }
   Future<Vacina> findVacina(int id) async {
-    final Database db = await getDatabase();
-    final List<Map<String, dynamic>> result = await db.query(tablename, where: " $_id = $id");
-    Vacina vacina = _toVacina(result);
-    return vacina;
+    try{
+      final Database db = await getDatabase();
+      final List<Map<String, dynamic>> result = await db.query(tablename, where: " $_id = $id");
+      Vacina vacina = _toVacina(result);
+      return vacina;
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findAllVacinas');
+      throw('erro');
+    }
+
+  }
+  Future<List<Vacina>> findVacinasVencendo() async {
+    try{
+      DateTime dtb = DateTime.now().add(Duration(days: 30));
+      final String dtBuscaVacina = dtb.year.toString() + dtb.month.toString().padLeft(2,'0') +dtb.day.toString().padLeft(2,'0') ;
+
+      final Database db = await getDatabase();
+      final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome from $tablename,$tablenamePet "
+          "where $tablename.id_pet = $tablenamePet.id  "
+          "and substr($_dataretorno,7)||substr($_dataretorno,4,2)||substr($_dataretorno,1,2)  <= '$dtBuscaVacina' "
+          "and substr($_dataretorno,7)||substr($_dataretorno,4,2)||substr($_dataretorno,1,2)  >= '"
+          + DateTime.now().year.toString() + DateTime.now().month.toString().padLeft(2,'0') +DateTime.now().day.toString().padLeft(2,'0') +
+          "'  ORDER BY $_dataretorno ASC");
+      List<Vacina> vacinas = _toList(result);
+      notifyListeners();
+      return vacinas;
+    }
+    catch(e, s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findAllVacinas');
+      throw('erro');
+    }
   }
   Future<String> findPetsComVacinasVencendo( ) async {
     final Database db = await getDatabase();
@@ -224,4 +257,6 @@ class Vacina_Dao extends ChangeNotifier{
        throw('erro');
     }
   }
+
+
 }

@@ -6,13 +6,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+//import 'package:vetpet/rotas/rotas.dart';
 import 'package:vetpet/screen/home.dart';
-import 'database/dao/aviso_dao.dart';
+//import 'database/dao/aviso_dao.dart';
 import 'database/dao/notificacao_dao.dart';
-import 'database/dao/pet_dao.dart';
+//import 'database/dao/pet_dao.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cron/cron.dart';
-import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
 
 
 main()  async {
@@ -21,7 +22,7 @@ main()  async {
     await Firebase.initializeApp();
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     final cron = Cron();
-    cron.schedule(Schedule.parse('25 * * * *'), () async {
+    cron.schedule(Schedule.parse('10 9 * * *'), () async {
       NotificacaoDao.verificaNotificacao();
     });
 
@@ -47,20 +48,20 @@ class MyApp extends StatelessWidget {
     } else {
         return  ScreenUtilInit(
             //sdesignSize: Size(360, 690),
-      builder: () => MaterialApp(
-      title: 'VetPet',
-      theme: ThemeData(
-        primaryColor: Colors.orange,
-        accentColor: Colors.orange[700],
-        colorScheme: ColorScheme.light(primary: Colors.orange,
-        error: Colors.red,
-        secondary: Colors.orange),
-        bottomAppBarColor: Colors.orange,
+        builder: () => MaterialApp(
+        title: 'VetPet',
+        theme: ThemeData(
+          primaryColor: Colors.orange,
+          accentColor: Colors.orange[700],
+          colorScheme: ColorScheme.light(primary: Colors.orange,
+          error: Colors.red,
+          secondary: Colors.orange),
+          bottomAppBarColor: Colors.orange,
+
 
         //highlightColor: Colors.grey[400],
         buttonTheme: ButtonThemeData(
           buttonColor: Colors.orange[400],
-
           textTheme: ButtonTextTheme.primary,
         ),
       //  textSelectionTheme: TextSelectionThemeData(selectionColor: Colors.grey),

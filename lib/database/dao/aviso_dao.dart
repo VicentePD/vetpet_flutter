@@ -57,6 +57,25 @@ class AvisoDao extends ChangeNotifier{
     Aviso aviso = _toAviso(result);
     return aviso;
   }
+  Future<List<Aviso>> findVacinasVencendo() async {
+    try{
+      DateTime dtb = DateTime.now().add(Duration(days: 30));
+      final String dtBuscaVacina = dtb.year.toString() + dtb.month.toString().padLeft(2,'0') +dtb.day.toString().padLeft(2,'0') ;
+      final Database db = await getDatabase();
+      final List<Map<String, dynamic>> result = await db.rawQuery("SELECT $tablename.*, $tablenamePet.nome from $tablename,$tablenamePet where $tablename.idpet = $tablenamePet.id  "
+          " and substr($_datavencimento,7)||substr($_datavencimento,4,2)||substr($_datavencimento,1,2)  <= '$dtBuscaVacina' "
+          "and substr($_datavencimento,7)||substr($_datavencimento,4,2)||substr($_datavencimento,1,2)  >= '"
+          + DateTime.now().year.toString() + DateTime.now().month.toString().padLeft(2,'0') +DateTime.now().day.toString().padLeft(2,'0') +
+          "'  ORDER BY $_datavencimento ASC");
+    // final List<Map<String, dynamic>> result = await db.query(tablename, orderBy: "$_datavencimento DESC");
+    List<Aviso> avisos = _toList(result);
+    notifyListeners();
+    return avisos; }
+    catch(e, s){
+    FirebaseCrashlytics.instance.recordError(e, s, reason: 'Erro findPetsComAvisosVencendo');
+    throw('erro');
+    }
+  }
   Future<String> findPetsComAvisosVencendo( ) async {
     final Database db = await getDatabase();
     DateTime dtb = DateTime.now().add(Duration(days: 30));
@@ -216,4 +235,6 @@ class AvisoDao extends ChangeNotifier{
        throw('erro');
     }
   }
+
+
 }

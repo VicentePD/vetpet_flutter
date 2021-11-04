@@ -29,7 +29,7 @@ class EditorDate extends StatelessWidget {
         style: TextStyle(fontSize: 16.0),
 
         decoration: InputDecoration(
-          icon:  Icon(icone) ,
+          icon:  Icon(icone,semanticLabel: rotulo) ,
           labelText: rotulo,
           hintText: dica,
         ),
@@ -45,9 +45,20 @@ class EditorDate extends StatelessWidget {
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2000),
         lastDate: DateTime(2101),
+        builder: ( context,  child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            accentColor: const Color(0xFF8CE7F1),
+            colorScheme: ColorScheme.light(primary: const Color(0xFF8CE7F1)),
+            buttonTheme: ButtonThemeData(
+                textTheme: ButtonTextTheme.primary
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null)
-
       controlador.text = DateFormat.yMd().format(picked);
   }
 }

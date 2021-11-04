@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'dart:io';
+//import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUtility {
@@ -11,8 +11,9 @@ class ImageUtility {
         ? Image.memory(
             base64Decode(base64String),
             fit: BoxFit.fill,
+        semanticLabel:"Foto do seu Pet"
           )
-        : Image.asset("asset/images/_MG_9521.jpg");
+        : Image.asset("asset/images/_MG_9521.jpg", semanticLabel:"Imagem padrão do aplicativo");
   }
 
   static Uint8List dataFromBase64String(String base64String) {
@@ -27,7 +28,6 @@ class ImageUtility {
     return  ImagePicker().pickImage(
       source: source == "Camera" ? ImageSource.camera : ImageSource.gallery,
       imageQuality: 50,
-      maxWidth: 120,
     );
   }
 }

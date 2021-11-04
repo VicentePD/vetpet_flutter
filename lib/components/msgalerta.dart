@@ -11,6 +11,7 @@ class MsgAlerta extends StatelessWidget {
     this.alert = AlertDialog(
       title: Text(titulo),
       content: Text(msg),
+      semanticLabel: titulo + ' ' + msg,
       actions: [
         cancel,
         continua,

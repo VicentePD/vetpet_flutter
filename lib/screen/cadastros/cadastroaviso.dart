@@ -15,7 +15,7 @@ import 'package:vetpet/model/aviso.dart';
 import 'package:vetpet/model/notificacao.dart';
 import 'package:vetpet/screen/petscreen.dart';
 import '../../helpers/globals.dart' as globals;
-import 'dart:developer' as developer;
+//import 'dart:developer' as developer;
 const _textoBotaoConfirmar = 'Salvar';
 
 class CadastroAviso extends StatefulWidget {
@@ -72,13 +72,11 @@ class CadastroAvisoState extends State<CadastroAviso> {
             child: Column(children: <Widget>[
           GestureDetector(
             onTap: () {
-              if (globals.idpetsel == 0) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return PetScreen();
                 })).then(
                   (value) => setState(() {}),
                 );
-              }
             },
             child: PetSelecionado(),
           ),

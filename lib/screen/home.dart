@@ -10,8 +10,6 @@ import 'package:vetpet/screen/vacinascreen.dart';
 
 import 'listaavisos.dart';
 
-const _kShouldTestAsyncErrorOnInit = false;
-
 // Toggle this for testing Crashlytics in your app locally.
 const _kTestingCrashlytics = true;
 
@@ -23,21 +21,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
 
   final   List<Widget> _widgetOptions = [
     PetScreen(),
-    VacinaScreen("Vacinas"),
+    VacinaScreen( ),
     AvisoScreen(),
-    LocalNotificationScreen()
+    SobreAplicativoScreen()
       ];
-  Future<void> _testAsyncErrorOnInit() async {
-    Future<void>.delayed(const Duration(seconds: 2), () {
-      final List<int> list = <int>[];
-      print(list[100]);
-    });
-  }
+
 // Define an async function to initialize FlutterFire
   Future<void> _initializeFlutterFire() async {
     // Wait for Firebase to initialize
@@ -50,9 +42,6 @@ class _HomePage extends State<HomePage> {
       // You could additionally extend this to allow users to opt-in.
       await FirebaseCrashlytics.instance
           .setCrashlyticsCollectionEnabled(!kDebugMode);
-    }
-    if (_kShouldTestAsyncErrorOnInit) {
-      await _testAsyncErrorOnInit();
     }
   }
 
@@ -80,28 +69,28 @@ class _HomePage extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home ,semanticLabel: "Botão Principal"),
             label: 'Home',
             backgroundColor:  Colors.orange,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.medical_services),
+            icon: Icon(Icons.medical_services ,semanticLabel: "Botão Vacinas"),
             label: 'Vacinas',
             backgroundColor:  Colors.orange,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.timer_outlined),
+            icon: Icon(Icons.timer_outlined ,semanticLabel: "Botão Avisos"),
             label: 'Alertas',
             backgroundColor:  Colors.orange,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.info_outline),
+            icon: Icon(Icons.info_outline,semanticLabel: "Botão Informações do Aplicativo",),
             label: 'Informações',
             backgroundColor:  Colors.orange,
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.yellowAccent,
+        selectedItemColor: Colors.black87,
         onTap: _onItemTapped,
       ),
     );

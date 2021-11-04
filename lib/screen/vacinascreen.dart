@@ -4,16 +4,16 @@ import 'package:vetpet/components/petselecionado.dart';
 
 import 'package:vetpet/database/dao/vacina_dao.dart';
 import 'package:vetpet/helpers/estilos.dart';
-import 'package:vetpet/helpers/imagemutil.dart';
+//import 'package:vetpet/helpers/imagemutil.dart';
 import 'package:vetpet/model/vacina.dart';
 
 import 'cadastros/cadastrovacina.dart';
 import '../helpers/globals.dart' as globals;
-
+//import 'dart:developer' as developer;
 
 class VacinaScreen extends StatefulWidget {
-  final String texto;
-  VacinaScreen(this.texto);
+  final String operacao;
+  VacinaScreen({this.operacao=""});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -26,13 +26,14 @@ class VacinaScreenState extends State<VacinaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orangeAccent,
       appBar: AppBar(
-        title: Text("Vacinas"),
+        title: widget.operacao == ""? Text("Vacinas"): Text("Alerta Vacinas "),
       ),
       body: Container(
-      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/_MG_9521.jpg"),
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage("asset/images/bgpata.png"),
     fit: BoxFit.cover,)),
-    child: globals.idpetsel == 0? _vacinaList(_atualiza) :Column(
+    child: globals.idpetsel == 0 || widget.operacao != ""? _vacinaList(_atualiza)  :Column(
           children: <Widget>[Expanded(
             child: PetSelecionado(),
             flex: 0,
@@ -40,7 +41,7 @@ class VacinaScreenState extends State<VacinaScreen> {
         child: _vacinaList(_atualiza  ),
       )] )),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: Icon(Icons.add,semanticLabel: "Incluir Vacina",),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return CadastroVacina(0);
@@ -60,7 +61,7 @@ class VacinaScreenState extends State<VacinaScreen> {
 
     return FutureBuilder<List<Vacina>>(
         initialData: [],
-        future: Vacina_Dao().findAllVacinas(globals.idpetsel),
+        future: widget.operacao == ""? Vacina_Dao().findAllVacinas(globals.idpetsel): Vacina_Dao().findVacinasVencendo() ,
         builder: (context, snapshot) {
           Widget corp = Row(children:<Widget>[Text("Nenhuma Vacina Cadastrada")]);
           switch (snapshot.connectionState) {
@@ -83,10 +84,11 @@ class VacinaScreenState extends State<VacinaScreen> {
             case ConnectionState.done:
               if (snapshot.data != null &&  snapshot.data!.length >0 ) {
                 final List<Vacina>? vacinas = snapshot.data;
+               // developer.log("LISTA Vacina " +widget.operacao);
                 corp = ListView.builder(
                   itemBuilder: (context, index) {
                     final Vacina vacina = vacinas![index];
-                    final String nomePet = globals.idpetsel == 0? "Nome:"+ vacina.nomepet +"\n":"";
+                    final String nomePet = globals.idpetsel == 0 || widget.operacao != "" ? "Nome:"+ vacina.nomepet +"\n":"";
                     return  SizedBox (
                       // height: height,
                         child:Card(
@@ -127,36 +129,5 @@ class VacinaScreenState extends State<VacinaScreen> {
           }
           return  corp ;
         });
-  }
-}
-
-class ItemPet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    if(globals.idpetsel == 0)
-    {
-      return Text("")   ;
-    }
-    return Card(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ListTile(
-              leading: CircleAvatar(
-                radius: 25,
-                backgroundColor: Color(0xffFDCF09) ,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: ImageUtility.imageFromBase64String(
-                        globals.fotopetsel)),
-              ),
-              title: Text("Nome:" + globals.nomepetsel),
-              subtitle: Text( "Data Nascimento:" + globals.datanascimentopet),
-              isThreeLine:true,
-              tileColor:  Colors.orange[100],
-              // selected: selecionado,
-            ),
-          ],
-        ));
   }
 }
